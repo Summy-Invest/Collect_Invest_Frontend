@@ -8,6 +8,9 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.collectinvest.databinding.ActivityMainBinding
+import io.ktor.client.*
+import  io.ktor.client.engine.cio.*
+
 
 class MainActivity : AppCompatActivity() {
 
