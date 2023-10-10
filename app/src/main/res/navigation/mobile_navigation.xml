@@ -3,23 +3,23 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/mobile_navigation"
-    app:startDestination="@+id/navigation_home">
+    app:startDestination="@+id/navigation_for_you">
 
     <fragment
-        android:id="@+id/navigation_home"
-        android:name="com.example.collectinvest.ui.home.HomeFragment"
-        android:label="@string/title_home"
-        tools:layout="@layout/fragment_home" />
+        android:id="@+id/navigation_for_you"
+        android:name="com.example.collectinvest.ui.foryou.ForYouFragment"
+        android:label="@string/title_for_you"
+        tools:layout="@layout/fragment_for_you" />
 
     <fragment
-        android:id="@+id/navigation_dashboard"
-        android:name="com.example.collectinvest.ui.dashboard.DashboardFragment"
-        android:label="@string/title_dashboard"
-        tools:layout="@layout/fragment_dashboard" />
+        android:id="@+id/navigation_goods"
+        android:name="com.example.collectinvest.ui.goods.GoodsFragment"
+        android:label="@string/title_goods"
+        tools:layout="@layout/fragment_goods" />
 
     <fragment
-        android:id="@+id/navigation_notifications"
-        android:name="com.example.collectinvest.ui.notifications.NotificationsFragment"
-        android:label="@string/title_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        android:id="@+id/navigation_mine"
+        android:name="com.example.collectinvest.ui.mine.MineFragment"
+        android:label="@string/title_mine"
+        tools:layout="@layout/fragment_mine" />
 </navigation>

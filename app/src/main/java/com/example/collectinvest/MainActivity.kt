@@ -9,7 +9,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.collectinvest.databinding.ActivityMainBinding
 import io.ktor.client.*
-import  io.ktor.client.engine.cio.*
+import io.ktor.client.engine.cio.*
 
 
 class MainActivity : AppCompatActivity() {
@@ -29,7 +29,7 @@ class MainActivity : AppCompatActivity() {
         // menu should be considered as top level destinations.
         val appBarConfiguration = AppBarConfiguration(
             setOf(
-                R.id.navigation_home, R.id.navigation_dashboard, R.id.navigation_notifications
+                R.id.navigation_for_you, R.id.navigation_goods, R.id.navigation_mine
             )
         )
         setupActionBarWithNavController(navController, appBarConfiguration)

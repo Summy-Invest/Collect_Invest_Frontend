@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">collectinvest</string>
-    <string name="title_home">Home</string>
-    <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <string name="title_for_you">Для Вас</string>
+    <string name="title_goods">Товары</string>
+    <string name="title_mine">Мои активы</string>
 </resources>
