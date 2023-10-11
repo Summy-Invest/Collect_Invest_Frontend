@@ -8,18 +8,21 @@
     <fragment
         android:id="@+id/navigation_for_you"
         android:name="com.example.collectinvest.ui.foryou.ForYouFragment"
-        android:label="@string/title_for_you"
         tools:layout="@layout/fragment_for_you" />
 
     <fragment
         android:id="@+id/navigation_goods"
         android:name="com.example.collectinvest.ui.goods.GoodsFragment"
-        android:label="@string/title_goods"
         tools:layout="@layout/fragment_goods" />
 
     <fragment
         android:id="@+id/navigation_mine"
         android:name="com.example.collectinvest.ui.mine.MineFragment"
-        android:label="@string/title_mine"
         tools:layout="@layout/fragment_mine" />
+
+    <fragment
+        android:id="@+id/profile_navigation"
+        android:label="@string/title_profile"
+        android:name="com.example.collectinvest.ui.profile.ProfileFragment"
+        tools:layout="@layout/fragment_profile" />
 </navigation>
