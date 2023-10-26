@@ -64,4 +64,5 @@ dependencies {
     implementation ("ch.qos.logback:logback-classic:1.2.3")
 
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
+    implementation ("com.squareup.picasso:picasso:2.71828")
 }
