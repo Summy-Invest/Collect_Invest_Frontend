@@ -65,4 +65,6 @@ dependencies {
 
     implementation ("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.0")
     implementation ("com.squareup.picasso:picasso:2.71828")
+    implementation("androidx.viewpager2:viewpager2:1.0.0")
+    implementation("com.synnapps:carouselview:0.1.5")
 }

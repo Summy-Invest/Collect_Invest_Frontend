@@ -10,47 +10,58 @@ import android.widget.ImageView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.viewpager.widget.ViewPager
+import androidx.viewpager2.widget.ViewPager2
 import com.example.collectinvest.ItemActivity
+import com.example.collectinvest.adapters.ProductCarouselAdapter
 import com.example.collectinvest.databinding.FragmentForYouBinding
 import com.squareup.picasso.Picasso
+import com.example.collectinvest.models.ProductModel
+import com.synnapps.carouselview.CarouselView
+import io.ktor.http.Url
+import java.util.Currency
+
+import com.synnapps.carouselview.ImageListener
 
 class ForYouFragment : Fragment() {
     private var _binding: FragmentForYouBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
     private val binding get() = _binding!!
-
+    var sampleImgs = arrayOf("https://www.funnyart.club/uploads/posts/2023-02/thumbs/1675611210_www-funnyart-club-p-lisa-mem-yumor-20.jpg",
+        "https://static.gtri.be/images/4cb4d2/ee3f884dae_m.jpg",
+        "https://s00.yaplakal.com/pics/pics_preview/1/2/0/6492021.jpg")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        //
         val ForYouViewModel =
             ViewModelProvider(this).get(ForYouViewModel::class.java)
 
         _binding = FragmentForYouBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val textView: TextView = binding.textForYou
-        //val imageView: ImageView = binding.imgForYou
-        ForYouViewModel.text.observe(viewLifecycleOwner) {
-            textView.text = it
-        }
         val button: Button = binding.buttonForYou
         button.setOnClickListener {
             val intt = Intent(requireContext(), ItemActivity::class.java)
             startActivity(intt)
         }
-        """val imgurl = "https://sun9-21.userapi.com/impf/c302413/v302413443/5d49/SYC9TgJhnIo.jpg?size=960x640&quality=96&sign=5c2e23bd777c56930a4bf246ba16735a&c_uniq_tag=mrjI63bIJJ1wotwjvbQk6Rc47NZzc72P8XvxZqsjFRI&type=album"
-        Picasso.get()
-            .load(imgurl)
-            .into(imageView)"""
+        val carouselView: CarouselView = binding.carouselView
+
+        carouselView.setPageCount(sampleImgs.size)
+        carouselView.setImageListener(imageListener)
+        carouselView.stopCarousel()
         return root
     }
+    var imageListener: ImageListener = object : ImageListener {
+        override fun setImageForPosition(position: Int, imageView: ImageView) {
+            // You can use Glide or Picasso here
+            val realPosition = position % sampleImgs.size
+            Picasso.get().load(sampleImgs[realPosition]).into(imageView)
+        }
+    }
 
-    override fun onDestroyView() {
+
+override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
     }
