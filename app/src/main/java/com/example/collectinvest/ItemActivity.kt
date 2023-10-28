@@ -14,8 +14,7 @@ class ItemActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_item)
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        //val itemFragment = supportFragmentManager.findFragmentById(R.id.itemFragment) as ItemFragment
-        //itemFragment.updateProductInfo(productModel)
+
         val bundle = intent.extras
         if (bundle != null) {
             // Извлекаем информацию о товаре из Bundle
