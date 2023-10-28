@@ -46,30 +46,14 @@ class ForYouFragment : Fragment() {
         _binding = FragmentForYouBinding.inflate(inflater, container, false)
         val root: View = binding.root
 
-        val button: Button = binding.buttonForYou
-        button.setOnClickListener {
-            val intt = Intent(requireContext(), ItemActivity::class.java)
-            startActivity(intt)
-        }
-        //val carouselView: CarouselView = binding.carouselView
         val recyclerView: RecyclerView = binding.carouselRecyclerView
         val adapter = ProductCarouselAdapter(prods)
         recyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         recyclerView.adapter = adapter
-        //carouselView.setPageCount(sampleImgs.size)
-        //carouselView.setImageListener(imageListener)
 
-        //carouselView.stopCarousel()
         return root
     }
 
-    var imageListener: ImageListener = object : ImageListener {
-        override fun setImageForPosition(position: Int, imageView: ImageView) {
-            // You can use Glide or Picasso here
-            val realPosition = position % sampleImgs.size
-            Picasso.get().load(sampleImgs[realPosition]).into(imageView)
-        }
-    }
 
 
 override fun onDestroyView() {
