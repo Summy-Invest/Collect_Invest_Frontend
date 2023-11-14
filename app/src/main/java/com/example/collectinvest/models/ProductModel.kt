@@ -2,31 +2,30 @@ package com.example.collectinvest.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import java.util.Currency
-import io.ktor.http.Url
-import java.io.Serializable
+
+
 
 data class ProductModel(
     val name: String,
-    val imgUrl: Url,
+    val imgUrl: String,
     val description: String,
     val price: Double,
-    val currency: Currency
-) : Parcelable, Serializable {
+    val currency: String
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readString() ?: "",
-        Url(parcel.readString() ?: ""),
+        parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readDouble(),
-        Currency.getInstance(parcel.readString() ?: "")
+        parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
         parcel.writeString(name)
-        parcel.writeString(imgUrl.toString())
+        parcel.writeString(imgUrl)
         parcel.writeString(description)
         parcel.writeDouble(price)
-        parcel.writeString(currency.currencyCode)
+        parcel.writeString(currency)
     }
 
     override fun describeContents(): Int {
