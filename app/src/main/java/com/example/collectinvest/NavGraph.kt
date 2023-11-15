@@ -18,7 +18,8 @@ import com.google.gson.GsonBuilder
 
 @Composable
 fun NavGraph(
-    navHostController: NavHostController
+    navHostController: NavHostController,
+
 ){
     NavHost(navController = navHostController, startDestination = "ForYou_screen"){
         composable("ForYou_screen"){
@@ -34,7 +35,8 @@ fun NavGraph(
         composable("Search"){
             Search_screen()
         }
-        composable("Item" + "/{name}", arguments = listOf(
+
+        /*composable("Item" + "/{name}", arguments = listOf(
             navArgument(name = "name") {
                 type = NavType.StringType
             })){
@@ -45,7 +47,7 @@ fun NavGraph(
 
             Item_screen(navController = navHostController, name = name)
 
-        }
+        }*/
 
 
     }

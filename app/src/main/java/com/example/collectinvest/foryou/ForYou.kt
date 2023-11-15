@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -28,7 +29,7 @@ var prods = listOf(
 
 @Composable
 fun ForYou_screen(navController: NavHostController){
-
+    val context = LocalContext.current
     Scaffold (
         content = {
             padding ->
@@ -40,7 +41,7 @@ fun ForYou_screen(navController: NavHostController){
             ) {
                 Row (modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.SpaceBetween){
                     prods.forEachIndexed{
-                            index, item -> CardCreator(item, navController)
+                            index, item -> CardCreator(item, navController, context)
                         if (index < prods.size - 1) {
                             Spacer(modifier = Modifier.width(100.dp))
                         }

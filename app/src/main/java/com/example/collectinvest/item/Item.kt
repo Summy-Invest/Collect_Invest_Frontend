@@ -30,15 +30,17 @@ import com.example.collectinvest.R
 import com.example.collectinvest.models.ProductModel
 
 @Composable
-fun Item_screen(navController: NavHostController, name:String?){
-
+fun Item_screen(item: ProductModel?){//(navController: NavHostController, name:String?){
+    val navController = rememberNavController()
     Scaffold(
         topBar = {
             TopAppBar(
                 title = { Text(text = "app bar title") },
                 navigationIcon =  {
 
-                    IconButton(onClick = { navController.navigate("ForYou") }) {
+                    IconButton(onClick = {
+
+                        navController.navigate("ForYou_screen") }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
@@ -48,6 +50,21 @@ fun Item_screen(navController: NavHostController, name:String?){
                 }
             )
         },
+        /*topBar = {
+            TopAppBar(
+                title = { Text(text = "app bar title") },
+                navigationIcon =  {
+
+                    IconButton(onClick = { navController.navigateUp() }) {
+                        Icon(
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+
+                }
+            )
+        },*/
         content = { padding ->
             Box(
                 contentAlignment = Alignment.Center,
@@ -61,7 +78,9 @@ fun Item_screen(navController: NavHostController, name:String?){
                         modifier = Modifier.fillMaxSize()
                             .padding()
                     ) {
-                        Text(text = "Name: ${name}")
+                        val name = item?.name.toString()
+                        Text("Name: ${name}")
+                        //Text(text = "Name: ${name}")
                     }
                 }
 

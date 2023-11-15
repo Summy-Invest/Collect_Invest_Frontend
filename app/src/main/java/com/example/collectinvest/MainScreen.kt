@@ -11,9 +11,11 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat.startActivity
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.collectinvest.bottom_nav.BottomNavigation_fun
 
@@ -27,6 +29,7 @@ fun MainScreen(activity: AppCompatActivity){
            BottomNavigation_fun(navController = navController_rem)
         },
         topBar = {
+
             TopAppBar (
                 title = {
                 Text(text="Govno")

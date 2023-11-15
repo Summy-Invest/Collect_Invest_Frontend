@@ -23,6 +23,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
@@ -39,7 +40,9 @@ fun Profile_screen(){
                 title = { Text(text = "app bar title") },
                 navigationIcon =  {
 
-                        IconButton(onClick = { navController.navigate("ForYou") }) {
+                        IconButton(onClick = {
+
+                            navController.navigate("ForYou_screen") }) {
                             Icon(
                                 imageVector = Icons.Filled.ArrowBack,
                                 contentDescription = "Back"
