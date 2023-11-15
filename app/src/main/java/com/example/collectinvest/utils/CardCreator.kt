@@ -27,7 +27,7 @@ import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 
 @Composable
-fun CardCreator(item: ProductModel, navController: NavHostController, context: Context){
+fun CardCreator(item: ProductModel, context: Context){
     val name = item.name
     val imgUrl = item.imgUrl
     val price = item.price
@@ -37,14 +37,9 @@ fun CardCreator(item: ProductModel, navController: NavHostController, context: C
             defaultElevation = 6.dp
         ),
         modifier = Modifier.clickable {
-
-            // Переход к экрану Item при нажатии на карточку
-            //navController.navigate("Item/${item.name}")
-
             val intt = Intent(context, ItemActivity::class.java)
             intt.putExtra("item_data", item)
             context.startActivity(intt)
-
         }
     ){
         Text(text = name);
@@ -56,8 +51,7 @@ fun CardCreator(item: ProductModel, navController: NavHostController, context: C
             placeholder = painterResource(R.drawable.ic_launcher_background),
             contentDescription = stringResource(R.string.app_name),
             contentScale = ContentScale.Crop,
-            modifier = Modifier.size(200.dp),
-            //colorFilter = ColorFilter.tint(Color.Blue)
+            modifier = Modifier.size(200.dp)
         )
         Text(text = price.toString() + " " + curr)
 

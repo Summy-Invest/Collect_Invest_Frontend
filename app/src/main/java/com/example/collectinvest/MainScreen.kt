@@ -36,7 +36,7 @@ fun MainScreen(activity: AppCompatActivity){
             },
                 actions = {
                     IconButton(onClick = {
-                        navController_rem.navigate("Search")
+                        navController_rem.navigate("Search_screen")
                     }) {
                         Icon(painter = painterResource(id = R.drawable.ic_search_24dp), contentDescription = "")
                     }

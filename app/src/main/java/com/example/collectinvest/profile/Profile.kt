@@ -70,7 +70,6 @@ fun Profile_screen(){
                         contentDescription = stringResource(R.string.app_name),
                         contentScale = ContentScale.Crop,
                         modifier = Modifier.size(100.dp),
-                        //colorFilter = ColorFilter.tint(Color.Blue)
                     )
                     Text(text = "Profile Screen")
                 }

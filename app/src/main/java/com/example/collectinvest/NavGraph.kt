@@ -32,23 +32,9 @@ fun NavGraph(
             YourAssets_screen(navController = navHostController)
         }
 
-        composable("Search"){
+        composable("Search_screen"){
             Search_screen()
         }
-
-        /*composable("Item" + "/{name}", arguments = listOf(
-            navArgument(name = "name") {
-                type = NavType.StringType
-            })){
-                navBackStackEntry ->
-            /* Extracting the id from the route */
-            val name = navBackStackEntry.arguments?.getString("name")
-            /* We check if it's not null */
-
-            Item_screen(navController = navHostController, name = name)
-
-        }*/
-
 
     }
 }

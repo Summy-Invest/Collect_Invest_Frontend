@@ -20,12 +20,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.collectinvest.NavGraph
 import com.example.collectinvest.models.ProductModel
 import com.example.collectinvest.utils.CardCreator
+import com.example.collectinvest.utils.TopProds
 
-
-var prods = listOf(
-    ProductModel(name = "Lisa1", imgUrl = "https://www.funnyart.club/uploads/posts/2023-02/thumbs/1675611210_www-funnyart-club-p-lisa-mem-yumor-20.jpg", description = "Hype", price = 300.0, currency = "USD"),
-    ProductModel(name="Lisa2", imgUrl = "https://static.gtri.be/images/4cb4d2/ee3f884dae_m.jpg", description = "Cringe", price = 200.0, currency = "USD"),
-    ProductModel(name="Lisa3", imgUrl = "https://s00.yaplakal.com/pics/pics_preview/1/2/0/6492021.jpg", description = "Rofl", price = 100.0, currency = "USD"))
 
 @Composable
 fun ForYou_screen(navController: NavHostController){
@@ -37,12 +33,12 @@ fun ForYou_screen(navController: NavHostController){
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
-                    .padding()// Занимает всё доступное пространство экрана
+                    .padding()
             ) {
                 Row (modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.SpaceBetween){
-                    prods.forEachIndexed{
-                            index, item -> CardCreator(item, navController, context)
-                        if (index < prods.size - 1) {
+                    TopProds.forEachIndexed{
+                            index, item -> CardCreator(item, context)
+                        if (index < TopProds.size - 1) {
                             Spacer(modifier = Modifier.width(100.dp))
                         }
                     }
@@ -50,7 +46,4 @@ fun ForYou_screen(navController: NavHostController){
             }
         }
     )
-
-
-
 }
