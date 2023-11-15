@@ -2,8 +2,10 @@ package com.example.collectinvest
 
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.example.collectinvest.foryou.ForYou_screen
 import com.example.collectinvest.goods.Goods_screen
 import com.example.collectinvest.item.Item_screen
@@ -32,14 +34,17 @@ fun NavGraph(
         composable("Search"){
             Search_screen()
         }
-        composable("Item/{item}"){
+        composable("Item" + "/{name}", arguments = listOf(
+            navArgument(name = "name") {
+                type = NavType.StringType
+            })){
                 navBackStackEntry ->
             /* Extracting the id from the route */
             val name = navBackStackEntry.arguments?.getString("name")
             /* We check if it's not null */
-            name?.let { name->
-                Item_screen(navController = navHostController, name = name)
-            }
+
+            Item_screen(navController = navHostController, name = name)
+
         }
 
 

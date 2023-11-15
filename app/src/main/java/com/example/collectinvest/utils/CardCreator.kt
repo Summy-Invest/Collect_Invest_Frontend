@@ -34,14 +34,9 @@ fun CardCreator(item: ProductModel, navController: NavHostController){
             defaultElevation = 6.dp
         ),
         modifier = Modifier.clickable {
-            val gson: Gson = GsonBuilder().create()
-            val itemJson = gson.toJson(item)
-            // Переход к экрану Item при нажатии на карточку
-            navController.navigate("Item/{item}".replace(
-                oldValue = "{name}",
-                newValue = item.name
-            ))
 
+            // Переход к экрану Item при нажатии на карточку
+            navController.navigate("Item/${item.name}")
 
         }
     ){

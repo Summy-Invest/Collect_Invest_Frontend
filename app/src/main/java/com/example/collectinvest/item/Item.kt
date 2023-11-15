@@ -30,9 +30,8 @@ import com.example.collectinvest.R
 import com.example.collectinvest.models.ProductModel
 
 @Composable
-fun Item_screen(navController: NavHostController, name:String){
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val product = navBackStackEntry?.arguments?.getParcelable<ProductModel>("product")
+fun Item_screen(navController: NavHostController, name:String?){
+
     Scaffold(
         topBar = {
             TopAppBar(
@@ -62,7 +61,7 @@ fun Item_screen(navController: NavHostController, name:String){
                         modifier = Modifier.fillMaxSize()
                             .padding()
                     ) {
-                        Text(text = name)
+                        Text(text = "Name: ${name}")
                     }
                 }
 
