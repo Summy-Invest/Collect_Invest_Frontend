@@ -1,22 +1,20 @@
 package com.example.collectinvest
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.view.MenuItem
+import androidx.activity.compose.setContent
+import androidx.appcompat.app.AppCompatActivity
+import com.example.collectinvest.item.Item_screen
+import com.example.collectinvest.models.ProductModel
+import com.example.collectinvest.profile.Profile_screen
 
 class ItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_item)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-        //supportActionBar?.setTitle(R.string.title_profile)
-    }
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when(item.itemId){
-            android.R.id.home -> {
-                finish()
-            }
+        //supportActionBar?.hide()
+        val item : ProductModel? = intent.getParcelableExtra("item_data")
+        setContent {
+            Item_screen(item)
         }
-        return true
+
     }
 }
