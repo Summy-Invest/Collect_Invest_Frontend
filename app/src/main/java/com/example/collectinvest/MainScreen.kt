@@ -32,7 +32,7 @@ fun MainScreen(activity: AppCompatActivity){
 
             TopAppBar (
                 title = {
-                Text(text="Govno")
+                Text(text="collectinvest")
             },
                 actions = {
                     IconButton(onClick = {
