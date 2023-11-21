@@ -1,6 +1,8 @@
 package com.example.collectinvest.utils
 
 import com.example.collectinvest.models.ProductModel
+import com.example.collectinvest.models.UserModel
+
 
 var TopProds = listOf(
     ProductModel(name = "Lisa1", imgUrl = "https://www.funnyart.club/uploads/posts/2023-02/thumbs/1675611210_www-funnyart-club-p-lisa-mem-yumor-20.jpg", description = "Hype", price = 300.0, currency = "USD"),
@@ -21,4 +23,15 @@ var YourProds = listOf(
     ProductModel(name = "Koshka7", imgUrl= "https://warframe.market/static/assets/user/avatar/620b280953e99b06525b12c2.png?26f178fb8efff386ade2a4b811d0d9a6", description = "Koshka s tapkom", price = 300.0, currency = "USD"),
     ProductModel(name="Koshka8", imgUrl = "https://sun6-21.userapi.com/s/v1/if1/fhkhjGBqDRQpAXc5Rhcd_7nseHBkCkkmx3hhuViQROJU8x8NABd095XiI3AHy-YVnXgwr8Az.jpg?size=962x962&quality=96&crop=227,0,962,962&ava=1", description = "Koshka s ulybkoy", price = 200.0, currency = "USD"),
     ProductModel(name="Koshka9", imgUrl = "https://i.vimeocdn.com/portrait/61741661_640x640", description = "Koshka stremnaya", price = 100.0, currency = "USD"),
+)
+var YourProds2 = listOf(
+    ProductModel(name = "Koshka7", imgUrl= "https://warframe.market/static/assets/user/avatar/620b280953e99b06525b12c2.png?26f178fb8efff386ade2a4b811d0d9a6", description = "Koshka s tapkom", price = 300.0, currency = "USD"),
+    ProductModel(name="Koshka8", imgUrl = "https://sun6-21.userapi.com/s/v1/if1/fhkhjGBqDRQpAXc5Rhcd_7nseHBkCkkmx3hhuViQROJU8x8NABd095XiI3AHy-YVnXgwr8Az.jpg?size=962x962&quality=96&crop=227,0,962,962&ava=1", description = "Koshka s ulybkoy", price = 200.0, currency = "USD")
+
+)
+
+var Users = listOf(
+    UserModel(usr_id = 101, name = "Евлампий", balance = 1000.0, email = "musipusi@mail.ru", password = "Babushka", GoodsList = YourProds),
+    UserModel(usr_id = 102, name = "Алевтина", balance = 1500.0, email = "terminator666@mail.ru", password = "Dedushka", GoodsList = YourProds2),
+    UserModel(usr_id = 3, name = "Aboba", balance = 0.0, email = "a", password = "a", GoodsList = YourProds2)
 )

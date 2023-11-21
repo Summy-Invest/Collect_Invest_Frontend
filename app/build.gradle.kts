@@ -115,4 +115,20 @@ dependencies {
     implementation("androidx.navigation:navigation-compose:$nav_version")
     implementation ("io.coil-kt:coil-compose:2.4.0")
     implementation ("com.google.code.gson:gson:2.8.5")
+    implementation ("androidx.datastore:datastore-preferences:1.0.0-alpha01")
+
+    implementation ("org.jetbrains.kotlin:kotlin-stdlib-jdk7:1.4.10")
+
+    api ("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.1")
+
+    api ("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.4.1")
+
+
+    implementation ("androidx.lifecycle:lifecycle-livedata-ktx:2.2.0")
+
+    implementation ("androidx.lifecycle:lifecycle-extensions:2.2.0")
+
+    implementation ("androidx.lifecycle:lifecycle-common-java8:2.2.0")
+
+    implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
 }

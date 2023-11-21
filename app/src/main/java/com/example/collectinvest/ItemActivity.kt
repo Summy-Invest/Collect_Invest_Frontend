@@ -13,7 +13,7 @@ class ItemActivity : AppCompatActivity() {
         //supportActionBar?.hide()
         val item : ProductModel? = intent.getParcelableExtra("item_data")
         setContent {
-            Item_screen(item)
+            Item_screen(item, this)
         }
 
     }

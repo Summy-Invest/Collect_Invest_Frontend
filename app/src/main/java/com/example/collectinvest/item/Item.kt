@@ -1,5 +1,6 @@
 package com.example.collectinvest.item
 
+import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -32,7 +33,7 @@ import com.example.collectinvest.R
 import com.example.collectinvest.models.ProductModel
 
 @Composable
-fun Item_screen(item: ProductModel?){
+fun Item_screen(item: ProductModel?, activity: AppCompatActivity){
     val navController = rememberNavController()
     Scaffold(
         topBar = {
@@ -40,7 +41,9 @@ fun Item_screen(item: ProductModel?){
                 title = { Text(text = "app bar title") },
                 navigationIcon =  {
                     IconButton(onClick = {
-                        navController.navigate("ForYou_screen") }) {
+                        activity.finish()
+                        //navController.navigate("ForYou_screen")
+                        }) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Back"
