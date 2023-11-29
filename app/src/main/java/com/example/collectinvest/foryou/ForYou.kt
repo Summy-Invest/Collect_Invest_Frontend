@@ -16,10 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import com.example.collectinvest.NavGraph
-import com.example.collectinvest.models.ProductModel
 import com.example.collectinvest.utils.CardCreator
+import com.example.collectinvest.utils.GoodsProds
 import com.example.collectinvest.utils.TopProds
 
 
@@ -36,9 +34,10 @@ fun ForYou_screen(navController: NavHostController){
                     .padding()
             ) {
                 Row (modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.SpaceBetween){
-                    TopProds.forEachIndexed{
+                    val Displayed = GoodsProds.subList(0, 3)
+                    Displayed.forEachIndexed{
                             index, item -> CardCreator(item, context)
-                        if (index < TopProds.size - 1) {
+                        if (index < Displayed.size - 1) {
                             Spacer(modifier = Modifier.width(100.dp))
                         }
                     }

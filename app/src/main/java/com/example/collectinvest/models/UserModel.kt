@@ -2,32 +2,25 @@ package com.example.collectinvest.models
 
 import android.os.Parcel
 import android.os.Parcelable
-import android.provider.ContactsContract.CommonDataKinds.Email
 
 data class UserModel(
-    val usr_id: Int,
-    val name: String,
-    val balance: Double,
-    val GoodsList: List<ProductModel>,
-    val email: String,
-    val password: String
+    val User_ID: Int,
+    val Name: String,
+    val Email: String,
+    val Password: String
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readInt(),
         parcel.readString() ?: "",
-        parcel.readDouble(),
-        parcel.createTypedArrayList(ProductModel.CREATOR) ?: listOf(),
         parcel.readString() ?: "",
         parcel.readString() ?: ""
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(usr_id)
-        parcel.writeString(name)
-        parcel.writeDouble(balance)
-        parcel.writeList(GoodsList)
-        parcel.writeString(email)
-        parcel.writeString(password)
+        parcel.writeInt(User_ID)
+        parcel.writeString(Name)
+        parcel.writeString(Email)
+        parcel.writeString(Password)
     }
 
     override fun describeContents(): Int {

@@ -4,14 +4,13 @@ import android.os.Bundle
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import com.example.collectinvest.item.Item_screen
-import com.example.collectinvest.models.ProductModel
-import com.example.collectinvest.profile.Profile_screen
+import com.example.collectinvest.models.CollectibleModel
 
 class ItemActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         //supportActionBar?.hide()
-        val item : ProductModel? = intent.getParcelableExtra("item_data")
+        val item : CollectibleModel? = intent.getParcelableExtra("item_data")
         setContent {
             Item_screen(item, this)
         }

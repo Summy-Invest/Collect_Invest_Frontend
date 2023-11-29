@@ -2,7 +2,6 @@ package com.example.collectinvest.utils
 
 import android.content.Context
 import android.content.Intent
-import android.os.Bundle
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
@@ -15,23 +14,17 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavHostController
-import androidx.navigation.navArgument
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.collectinvest.ItemActivity
-import com.example.collectinvest.NavGraph
 import com.example.collectinvest.R
-import com.example.collectinvest.models.ProductModel
-import com.google.gson.Gson
-import com.google.gson.GsonBuilder
+import com.example.collectinvest.models.CollectibleModel
 
 @Composable
-fun CardCreator(item: ProductModel, context: Context){
-    val name = item.name
-    val imgUrl = item.imgUrl
-    val price = item.price
-    val curr = item.currency
+fun CardCreator(item: CollectibleModel, context: Context){
+    val name = item.Name
+    val imgUrl = item.Photo
+    val actualPrice = ActualPrices.find { it.Collectible_ID == item.Collectible_ID }?.Price
     ElevatedCard (
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
@@ -53,7 +46,8 @@ fun CardCreator(item: ProductModel, context: Context){
             contentScale = ContentScale.Crop,
             modifier = Modifier.size(200.dp)
         )
-        Text(text = price.toString() + " " + curr)
+        Text(text = actualPrice.toString())
+
 
     }
 

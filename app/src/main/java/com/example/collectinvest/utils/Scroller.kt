@@ -2,7 +2,6 @@ package com.example.collectinvest.utils
 
 import android.content.Context
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,10 +11,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.collectinvest.models.ProductModel
+import com.example.collectinvest.models.CollectibleModel
 
 @Composable
-fun ScrollerCreator(prods: List<ProductModel>, context: Context){
+fun ScrollerCreator(prods: List<CollectibleModel>, context: Context){
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)

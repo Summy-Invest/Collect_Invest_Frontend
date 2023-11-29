@@ -18,6 +18,7 @@ import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.collectinvest.bottom_nav.BottomNavigation_fun
+import com.example.collectinvest.theme.lightgreen
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -46,7 +47,7 @@ fun MainScreen(activity: AppCompatActivity){
                     }) {
                         Icon(painter = painterResource(id = R.drawable.ic_profile_24dp), contentDescription = "")
                     }
-                }
+                }, backgroundColor = lightgreen
             )
 
         }
