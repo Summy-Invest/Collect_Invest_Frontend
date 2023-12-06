@@ -15,5 +15,6 @@ class ItemActivity : AppCompatActivity() {
             Item_screen(item, this)
         }
 
+
     }
 }

@@ -30,15 +30,6 @@ var GoodsProds = listOf(
     CollectibleModel(Collectible_ID = 12, Name="Koshka9", Photo = "https://i.vimeocdn.com/portrait/61741661_640x640", Description = "Koshka stremnaya", Category_ID = 2)
     )
 
-var YourProds = listOf(
-    CollectibleModel(Collectible_ID = 10, Name = "Koshka7", Photo = "https://warframe.market/static/assets/user/avatar/620b280953e99b06525b12c2.png?26f178fb8efff386ade2a4b811d0d9a6", Description = "Koshka s tapkom", Category_ID = 2),
-    CollectibleModel(Collectible_ID = 11, Name="Koshka8", Photo = "https://sun6-21.userapi.com/s/v1/if1/fhkhjGBqDRQpAXc5Rhcd_7nseHBkCkkmx3hhuViQROJU8x8NABd095XiI3AHy-YVnXgwr8Az.jpg?size=962x962&quality=96&crop=227,0,962,962&ava=1", Description = "Koshka s ulybkoy", Category_ID = 2),
-    CollectibleModel(Collectible_ID = 12, Name="Koshka9", Photo = "https://i.vimeocdn.com/portrait/61741661_640x640", Description = "Koshka stremnaya", Category_ID = 2)
-)
-var YourProds2 = listOf(
-    CollectibleModel(Collectible_ID = 10, Name = "Koshka7", Photo = "https://warframe.market/static/assets/user/avatar/620b280953e99b06525b12c2.png?26f178fb8efff386ade2a4b811d0d9a6", Description = "Koshka s tapkom", Category_ID = 2),
-    CollectibleModel(Collectible_ID = 11, Name="Koshka8", Photo = "https://sun6-21.userapi.com/s/v1/if1/fhkhjGBqDRQpAXc5Rhcd_7nseHBkCkkmx3hhuViQROJU8x8NABd095XiI3AHy-YVnXgwr8Az.jpg?size=962x962&quality=96&crop=227,0,962,962&ava=1", Description = "Koshka s ulybkoy", Category_ID = 2)
-    )
 
 var Users = mutableListOf(
     UserModel(User_ID = 101, Name = "Евлампий", Email = "musipusi@mail.ru", Password = "Babushka"),

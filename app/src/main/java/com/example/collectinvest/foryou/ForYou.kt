@@ -21,6 +21,7 @@ import com.example.collectinvest.utils.GoodsProds
 import com.example.collectinvest.utils.TopProds
 
 
+// экран "Для Вас"
 @Composable
 fun ForYou_screen(navController: NavHostController){
     val context = LocalContext.current
@@ -33,12 +34,14 @@ fun ForYou_screen(navController: NavHostController){
                     .fillMaxSize()
                     .padding()
             ) {
-                Row (modifier = Modifier.horizontalScroll(rememberScrollState()), horizontalArrangement = Arrangement.SpaceBetween){
+                Row (modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 100.dp), horizontalArrangement = Arrangement.SpaceBetween){
+                    // получение списка отображаемых товаров
+                    // первые 3 эл-та из списка полученных из апи
                     val Displayed = GoodsProds.subList(0, 3)
                     Displayed.forEachIndexed{
                             index, item -> CardCreator(item, context)
                         if (index < Displayed.size - 1) {
-                            Spacer(modifier = Modifier.width(100.dp))
+                            Spacer(modifier = Modifier.width(200.dp))
                         }
                     }
                 }

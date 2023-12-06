@@ -13,6 +13,8 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.collectinvest.theme.MainTheme
 
+
+// функция отображения нижней панели навигации
 @Composable
 fun BottomNavigation_fun(
     navController: NavController
@@ -25,12 +27,16 @@ fun BottomNavigation_fun(
     BottomNavigation(
         backgroundColor = Color.White
     ) {
+        // текущий экран
         val backStackEntry by navController.currentBackStackEntryAsState()
+        // текущий роут
         val currRoute = backStackEntry?.destination?.route
         listItems.forEach{item ->
             BottomNavigationItem(
+                // присваивание роута до выбранного экрана
                 selected = currRoute == item.route,
                 onClick = {
+                    // переход
                     navController.navigate(item.route)
                 },
                 icon = {

@@ -26,14 +26,14 @@ import com.example.collectinvest.utils.CardCreator
 import com.example.collectinvest.utils.GoodsProds
 import com.example.collectinvest.utils.ScrollerCreator
 import com.example.collectinvest.utils.TopProds
-import com.example.collectinvest.utils.YourProds
 
 
+
+// экран товаров
 @Composable
 fun Goods_screen(navController: NavHostController){
     val context = LocalContext.current
     Scaffold (
-
         content = {
                 padding ->
             Box(
@@ -42,6 +42,7 @@ fun Goods_screen(navController: NavHostController){
                     .fillMaxSize()
                     .padding(top = 60.dp, bottom = 40.dp)
             ) {
+                // контент экрана
                 ScrollerCreator(prods = GoodsProds, context = context)
             }
         },

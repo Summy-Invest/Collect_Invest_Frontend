@@ -9,21 +9,25 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
+import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
 import androidx.compose.material.TextField
+import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
@@ -31,6 +35,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -42,8 +47,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat.startActivity
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -58,6 +67,8 @@ import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
+import com.example.collectinvest.utils.ActualPrices
+import com.example.collectinvest.utils.BoughtProducts
 import com.example.collectinvest.utils.SessionManager
 import com.example.collectinvest.utils.SessionManager.Companion.USER_EMAIL_KEY
 import com.example.collectinvest.utils.Users
@@ -68,21 +79,25 @@ import io.ktor.client.engine.android.Android
 import io.ktor.http.ContentType
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 
+
+// экран пользователя
 @Composable
 fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppCompatActivity){
-    val navController = rememberNavController()
     Scaffold(
         topBar = {
+            // верхняя панель активности
             TopAppBar(
-                title = { Text(text = "Profile") },
+                title = { Text(text = "Ваш профиль") },
                 navigationIcon =  {
 
                         IconButton(onClick = {
+
                             activprof.finish()
 
                         }) {
@@ -102,31 +117,86 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     .fillMaxSize()
                     .padding()
             ) {
-                Column {
+                Column (horizontalAlignment = Alignment.CenterHorizontally){
+                    // получение имени пользователя по емейлу-> по айди
+                    // запрос к апи??
                     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
                     val userEmail = sharedPreferences.getString("email", "")
                     val username = Users.find { it.Email == userEmail }?.Name
                     val usr_id = Users.find { it.Email == userEmail }?.User_ID
-                    Text(text=username.toString())
-                    val img_url = "https://kartinki.pibig.info/uploads/posts/2023-04/1682323864_kartinki-pibig-info-p-obezyana-za-kompyuterom-kartinki-arti-inst-24.jpg"
-                    AsyncImage(
-                        model = ImageRequest.Builder(LocalContext.current)
-                            .data(img_url)
-                            .crossfade(true)
-                            .build(),
-                        placeholder = painterResource(R.drawable.ic_launcher_background),
-                        contentDescription = stringResource(R.string.app_name),
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.size(100.dp),
+
+                    // имя
+                    Text(text=username.toString(), style = TextStyle(
+                        fontFamily = FontFamily.Default,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
                     )
 
+                    // дефолтная картинка
+                    Image(
+                        painter = painterResource(id = R.drawable.user),
+                        contentDescription = "Profile img default",
+                        modifier = Modifier
+                            .width(100.dp)
+                            .height(100.dp)
+                    )
+
+                    // баланс
+                    // запрос к апи
                     var balance by remember { mutableStateOf(Wallets.find { it.User_id == usr_id }?.Money ?: 0.0) }
-                    Text(text = balance.toString())
+                    Row(modifier = Modifier.padding(20.dp)) {
+                        Text(text = "Ваш баланс: ", style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        ))
+                        Text(text = balance.toString() + " руб", style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 14.sp
+                        ))
+                    }
+
+                    // активы в денежном эквиваленте
+                    // запрос к апи
+                    // обновление раз в 30 мин
+
+                    var money_posses by remember { mutableStateOf(0.0) }
+
+                    LaunchedEffect(true) {
+                        while (true) {
+                            money_posses = CountAssetMoney(usr_id)
+                            delay(30 * 60 * 1000) // Пауза на 30 минут
+                        }
+                    }
+
+                    Row (modifier = Modifier.padding(20.dp)){
+                        Text(text = "Ваши активы: ", style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 14.sp
+                        ))
+                        Text(text = money_posses.toString() + " руб", style = TextStyle(
+                            fontFamily = FontFamily.Default,
+                            fontSize = 14.sp
+                        ))
+                    }
+
+
+                    //
+
+                    val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
+                        focusedBorderColor = darkgreen, // Цвет при фокусе
+                        unfocusedBorderColor = Color.Gray, // Цвет при отсутствии фокуса
+                        cursorColor = darkgreen // Цвет курсора
+                    )
+
                     var showDialog by remember { mutableStateOf(false) }
                     var inputText by remember { mutableStateOf("") }
-                    Button(onClick = { showDialog = true }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)) {
+                    Button(onClick = { showDialog = true }, modifier = Modifier.fillMaxWidth().padding(20.dp), colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)) {
                         androidx.compose.material3.Text(text = "Пополнить кошелек", color = white)
                     }
+
                     // пополнение кошелька
                     if (showDialog) {
                         AlertDialog(
@@ -134,11 +204,12 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                             title = { Text("Пополнить кошелек") },
                             text = {
                                 Column {
-                                    TextField(
+                                    OutlinedTextField(
                                         value = inputText,
                                         onValueChange = { inputText = it },
-                                        label = { Text("Количество денег") },
-                                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
+                                        label = { Text(text = "Количество денег", style = TextStyle(color = Color.Gray)) },
+                                        keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number),
+                                        colors = textFieldColors
                                     )
 
                                     Spacer(modifier = Modifier.height(16.dp))
@@ -147,7 +218,8 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                                         onClick = {
                                             val amount = inputText.toDoubleOrNull() ?: 0.0
                                             balance += amount
-                                            // сам список кошельков не обновляется, тут будет запрос на обновление бд
+                                            // обновление данных в кошельке
+                                            // запрос к апи
                                             val walletToUpdate = Wallets.find { it.User_id == usr_id }
                                             walletToUpdate?.let {
                                                 it.Money = balance
@@ -172,6 +244,8 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                         )
                     }
 
+                    // выход из сессии
+                    // сброс преференсес
                     Button(onClick = {
                         saveUserLoginStatus(context = context, isLoggedIn = false, userEmail = "")
                         mainact.finish()
@@ -179,7 +253,7 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                         activprof.startActivity(intent)
                         activprof.finish()
 
-                    }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)) {
+                    }, modifier = Modifier.fillMaxWidth().padding(20.dp), colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)) {
                         androidx.compose.material3.Text(text = "Выйти", color = white)
                     }
                 }
@@ -189,9 +263,17 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
     )
 }
 
-@Composable
-fun BalancePopUP(showDialog: Boolean){
 
+// функция подсчета активов кошелька
+// запрос к апи
+fun CountAssetMoney(user_id: Int?): Double{
+    var filtered = BoughtProducts.filter { it.User_ID == user_id }
+    var money_posess = 0.0
+    for (el in filtered){
+        var act_price = ActualPrices.find { it.Collectible_ID == el.Collectible_ID }?.Price ?: 0.0
+        money_posess += act_price * el.Count
+    }
+    return money_posess
 }
 
 
