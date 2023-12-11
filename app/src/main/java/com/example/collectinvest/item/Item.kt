@@ -59,8 +59,6 @@ import com.example.collectinvest.utils.Categories
 import com.example.collectinvest.utils.Transactions
 import com.example.collectinvest.utils.Users
 import com.example.collectinvest.utils.Wallets
-import com.example.collectinvest.yourassets.UserAssets
-
 
 
 // экран товара

@@ -14,7 +14,5 @@ class ItemActivity : AppCompatActivity() {
         setContent {
             Item_screen(item, this)
         }
-
-
     }
 }

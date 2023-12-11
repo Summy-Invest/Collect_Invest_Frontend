@@ -23,7 +23,7 @@ fun NavGraph(
             Goods_screen(navController = navHostController)
         }
         composable("YourAssets_screen"){
-            YourAssets_screen()
+            YourAssets_screen(navController = navHostController)
         }
 
         composable("Search_screen"){

@@ -5,21 +5,26 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
-import com.example.collectinvest.bottom_nav.BottomItem
 import com.example.collectinvest.models.CollectibleModel
-
 import com.example.collectinvest.utils.BoughtProducts
 import com.example.collectinvest.utils.GoodsProds
 import com.example.collectinvest.utils.ScrollerCreator
@@ -27,34 +32,50 @@ import com.example.collectinvest.utils.ScrollerCreator
 import com.example.collectinvest.utils.Users
 
 
-var UserAssets = listOf<CollectibleModel>()
+
 // экран купленного
 @Composable
-fun YourAssets_screen(){
+fun YourAssets_screen(navController: NavHostController) {
     val context = LocalContext.current
-    Scaffold (
-        content = {
-                padding ->
+    // получение инфо о купленных товарах
+    // запрос к апи
+    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
+    val userEmail = sharedPreferences.getString("email", "")
+    val usr_id = Users.find { it.Email == userEmail }?.User_ID
+
+    var assetsList by remember {
+        mutableStateOf(GetAssets(usr_id))
+    }
+
+    val lifecycleOwner = LocalLifecycleOwner.current
+    DisposableEffect(Unit) {
+        val observer = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                assetsList = GetAssets(usr_id)
+            }
+        }
+        lifecycleOwner.lifecycle.addObserver(observer)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(observer)
+        }
+    }
+
+    Scaffold(
+        content = { padding ->
             Box(
                 contentAlignment = Alignment.Center,
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(top = 60.dp, bottom = 40.dp)
             ) {
-                Column{
-
-                    // получение инфы о купленных товарах
-                    // запрос к апи
-                    val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                    val userEmail = sharedPreferences.getString("email", "")
-                    val usr_id = Users.find { it.Email == userEmail }?.User_ID
-                    UserAssets  =  GetAssets(usr_id)
-                    ScrollerCreator(prods = GetAssets(usr_id), context = context)
+                Column {
+                    ScrollerCreator(prods = assetsList, context = context)
                 }
             }
         },
-        )
+    )
 }
+
 
 // запрос к апи
 fun GetAssets(usr_id: Int?): List<CollectibleModel>{

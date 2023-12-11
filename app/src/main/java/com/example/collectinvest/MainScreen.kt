@@ -21,6 +21,7 @@ import com.example.collectinvest.bottom_nav.BottomNavigation_fun
 import com.example.collectinvest.theme.lightgreen
 
 
+
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun MainScreen(activity: AppCompatActivity){

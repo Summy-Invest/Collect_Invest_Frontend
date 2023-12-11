@@ -66,7 +66,7 @@ fun CardCreator(item: CollectibleModel, context: Context, card_size: Int = 200){
                         .data(imgUrl)
                         .crossfade(true)
                         .build(),
-                    placeholder = painterResource(R.drawable.ic_launcher_background),
+                    placeholder = painterResource(R.drawable.loader),
                     contentDescription = stringResource(R.string.app_name),
                     contentScale = ContentScale.Crop,
                     modifier = Modifier.size(card_size.dp)
