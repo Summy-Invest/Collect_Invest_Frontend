@@ -203,18 +203,19 @@ fun item_container(item: CollectibleModel?, context: Context){
 
                         Button(
                             onClick = {
-                                // количество и проверка на кошелек
-                                val amount = inputTextBuy.toIntOrNull() ?: 0
-                                val canBuy = CanBuy(usr_id, actualPrice, amount)
-                                if (canBuy){
-                                    // вызов функции покупки
-                                    BuyFunc(item, usr_id, actualPrice, amount)
-                                    isEnabled = true
-                                    showDialogBuy = false
-                                }
-                                else{
-                                    errorMessageBuy = "Недостаточно средств"
-                                }
+//                                     //TODO покупка
+//                                // количество и проверка на кошелек
+//                                val amount = inputTextBuy.toIntOrNull() ?: 0
+//                                val canBuy = CanBuy(usr_id, actualPrice, amount)
+//                                if (canBuy){
+//                                    // вызов функции покупки
+//                                    BuyFunc(item, usr_id, actualPrice, amount)
+//                                    isEnabled = true
+//                                    showDialogBuy = false
+//                                }
+//                                else{
+//                                    errorMessageBuy = "Недостаточно средств"
+//                                }
                             }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
                         ) {
                             Text("Купить", color = white)
@@ -259,23 +260,24 @@ fun item_container(item: CollectibleModel?, context: Context){
 
                         Button(
                             onClick = {
-                                // количество и проверка на возможность продать
-                                val amount_to_sell = inputTextSell.toIntOrNull() ?: 0
-                                val canSell = CanSell(count, amount_to_sell)
-                                if (canSell){
-                                    // функция продажи
-                                    SellFunc(item, usr_id, actualPrice, amount_to_sell, count)
-
-                                    // проверка на наличие акций этого предмета у юзера
-                                    // если акций нет - кнопка продать отключается
-                                    // запрос к апи?
-                                    if (BoughtProducts.find { it.Collectible_ID == item?.id && it.User_ID ==usr_id } ==null)
-                                        isEnabled = false
-                                    showDialogSell = false
-                                }
-                                else{
-                                    errorMessageSell = "Недостаточно акций"
-                                }
+                                      //TODO продажа
+//                                // количество и проверка на возможность продать
+//                                val amount_to_sell = inputTextSell.toIntOrNull() ?: 0
+//                                val canSell = CanSell(count, amount_to_sell)
+//                                if (canSell){
+//                                    // функция продажи
+//                                    SellFunc(item, usr_id, actualPrice, amount_to_sell, count)
+//
+//                                    // проверка на наличие акций этого предмета у юзера
+//                                    // если акций нет - кнопка продать отключается
+//                                    // запрос к апи?
+//                                    if (BoughtProducts.find { it.Collectible_ID == item?.Collectible_ID && it.User_ID ==usr_id } ==null)
+//                                        isEnabled = false
+//                                    showDialogSell = false
+//                                }
+//                                else{
+//                                    errorMessageSell = "Недостаточно акций"
+//                                }
                             }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
                         ) {
                             Text("Продать", color = white)
@@ -304,14 +306,14 @@ fun item_container(item: CollectibleModel?, context: Context){
 }
 
 
-// проверка на возможность купить
-// баланс юзера по айди
-// запрос к кошелькам?
-fun CanBuy(usr_id: Int?, actualPrice: Double, count: Int): Boolean{
-    var money_to_spend = actualPrice * count
-    var balance = Wallets.find { it.User_id == usr_id }?.Money ?: 0.0
-    return (balance - money_to_spend) >= 0
-}
+//// проверка на возможность купить
+//// баланс юзера по айди
+//// запрос к кошелькам?
+//fun CanBuy(usr_id: Int?, actualPrice: Double, count: Int): Boolean{
+//    var money_to_spend = actualPrice * count
+//    var balance = Wallets.find { it.User_id == usr_id }?.Money ?: 0.0
+//    return (balance - money_to_spend) >= 0
+//}
 
 
 // функция покупки
@@ -349,10 +351,10 @@ fun BuyFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: In
 }
 
 
-// проверка на возможность продать
-fun CanSell(usersCount: Int, intentCount:Int): Boolean{
-    return usersCount >= intentCount
-}
+//// проверка на возможность продать
+//fun CanSell(usersCount: Int, intentCount:Int): Boolean{
+//    return usersCount >= intentCount
+//}
 
 // функция продажи
 fun SellFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: Int, ActualCount: Int){

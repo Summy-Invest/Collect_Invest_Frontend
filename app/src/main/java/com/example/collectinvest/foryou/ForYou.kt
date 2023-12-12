@@ -37,7 +37,8 @@ fun ForYou_screen(navController: NavHostController){
                 Row (modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 100.dp), horizontalArrangement = Arrangement.SpaceBetween){
                     // получение списка отображаемых товаров
                     // первые 3 эл-та из списка полученных из апи
-                    // ПЕРВЫЕ 3 ШТУКИ ИЗ СПИСКА ТОВАРОВ
+
+                    //TODO
                     val Displayed = GoodsProds.subList(0, 3)
                     Displayed.forEachIndexed{
                             index, item -> CardCreator(item, context)

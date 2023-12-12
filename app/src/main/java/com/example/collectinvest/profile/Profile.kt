@@ -1,12 +1,9 @@
 package com.example.collectinvest.profile
 
-import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -15,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.AlertDialog
@@ -26,42 +22,30 @@ import androidx.compose.material.IconButton
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.Scaffold
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.core.content.ContextCompat.startActivity
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
-import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.collectinvest.MainActivity
-import com.example.collectinvest.MainScreen
 import com.example.collectinvest.R
-import com.example.collectinvest.login.Login_screen
+import com.example.collectinvest.entities.Message
+import com.example.collectinvest.entities.financial.Wallet
 
 import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
@@ -69,11 +53,17 @@ import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
 import com.example.collectinvest.utils.BoughtProducts
 
+import com.example.collectinvest.utils.HttpClientSingleton
 import com.example.collectinvest.utils.Users
 import com.example.collectinvest.utils.Wallets
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.put
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 
 import kotlinx.coroutines.delay
-
+import kotlinx.coroutines.runBlocking
 
 
 // экран пользователя
@@ -111,10 +101,8 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // получение имени пользователя по емейлу-> по айди
                     // запрос к апи??
                     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                    val userEmail = sharedPreferences.getString("email", "")
-                    //val username = sharedPreferences.getString("user_name", "")
-                    val username = Users.find { it.Email == userEmail }?.Name
-                    val usr_id = Users.find { it.Email == userEmail }?.User_ID
+                    val username = sharedPreferences.getString("user_name", "")
+                    val userId = sharedPreferences.getLong("user_id", 0)
 
                     // имя
                     Text(text=username.toString(), style = TextStyle(
@@ -133,9 +121,29 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                             .height(100.dp)
                     )
 
+
+                    var wallet: Wallet = Wallet(0,0,0.0,"", null)
+                    runBlocking {
+                        try {
+                            val client = HttpClientSingleton.client
+                            val response: HttpResponse =
+                                client.get("http://10.0.2.2:1111/financialService/getWallet/$userId")
+                            when (response.status) {
+                                HttpStatusCode.OK -> {
+                                    wallet = response.body<Wallet>()
+                                }
+                                else -> {
+                                    throw Throwable(response.body<Message>().message)
+                                }
+                            }
+                        }catch (e: Throwable){
+                            println(e.toString())
+                        }
+                    }
+
                     // баланс
                     // запрос к апи
-                    var balance by remember { mutableStateOf(Wallets.find { it.User_id == usr_id }?.Money ?: 0.0) }
+                    var balance = wallet.balance
                     Row(modifier = Modifier.padding(20.dp)) {
                         Text(text = "Ваш баланс: ", style = TextStyle(
                             fontFamily = FontFamily.Default,
@@ -152,29 +160,27 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // запрос к апи
                     // обновление раз в 30 мин
 
-                    var money_posses by remember { mutableStateOf(0.0) }
+//                    var money_posses by remember { mutableStateOf(0.0) }
+//
+//                    LaunchedEffect(true) {
+//                        while (true) {
+//                            money_posses = CountAssetMoney(userId)
+//                            delay(30 * 60 * 1000) // Пауза на 30 минут
+//                        }
+//                    }
+//
+//                    Row (modifier = Modifier.padding(20.dp)){
+//                        Text(text = "Ваши активы: ", style = TextStyle(
+//                            fontFamily = FontFamily.Default,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 14.sp
+//                        ))
+//                        Text(text = money_posses.toString() + " руб", style = TextStyle(
+//                            fontFamily = FontFamily.Default,
+//                            fontSize = 14.sp
+//                        ))
+//                    }
 
-                    LaunchedEffect(true) {
-                        while (true) {
-                            money_posses = CountAssetMoney(usr_id)
-                            delay(30 * 60 * 1000) // Пауза на 30 минут
-                        }
-                    }
-
-                    Row (modifier = Modifier.padding(20.dp)){
-                        Text(text = "Ваши активы: ", style = TextStyle(
-                            fontFamily = FontFamily.Default,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        ))
-                        Text(text = money_posses.toString() + " руб", style = TextStyle(
-                            fontFamily = FontFamily.Default,
-                            fontSize = 14.sp
-                        ))
-                    }
-
-
-                    //
 
                     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = darkgreen, // Цвет при фокусе
@@ -209,11 +215,23 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                                         onClick = {
                                             val amount = inputText.toDoubleOrNull() ?: 0.0
                                             balance += amount
-                                            // обновление данных в кошельке
-                                            // запрос к апи
-                                            val walletToUpdate = Wallets.find { it.User_id == usr_id }
-                                            walletToUpdate?.let {
-                                                it.Money = balance
+
+                                            runBlocking {
+                                                try {
+                                                    val client = HttpClientSingleton.client
+                                                    val response: HttpResponse =
+                                                        client.put("http://10.0.2.2:1111/financialService/topUp/$userId/$amount")
+                                                    when (response.status) {
+                                                        HttpStatusCode.OK -> {
+                                                            println("ok")
+                                                        }
+                                                        else -> {
+                                                            throw Throwable(response.body<Message>().message)
+                                                        }
+                                                    }
+                                                }catch(e: Throwable){
+                                                    println(e.toString())
+                                                }
                                             }
                                             showDialog = false
                                         }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
@@ -238,7 +256,7 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // выход из сессии
                     // сброс преференсес
                     Button(onClick = {
-                        saveUserLoginStatus(context = context, isLoggedIn = false, userEmail = "")
+                        saveUserLoginStatus(context = context, isLoggedIn = false, id = 0, userName = "user_name")
                         mainact.finish()
                         val intent = Intent(activprof, MainActivity::class.java)
                         activprof.startActivity(intent)
