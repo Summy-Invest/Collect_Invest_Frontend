@@ -44,6 +44,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.collectinvest.MainActivity
 import com.example.collectinvest.R
+import com.example.collectinvest.entities.Message
+import com.example.collectinvest.entities.financial.Wallet
 
 import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
@@ -51,10 +53,17 @@ import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
 import com.example.collectinvest.utils.ActualPrices
 import com.example.collectinvest.utils.BoughtProducts
+import com.example.collectinvest.utils.HttpClientSingleton
 import com.example.collectinvest.utils.Users
 import com.example.collectinvest.utils.Wallets
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.put
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
 
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.runBlocking
 
 
 // экран пользователя
@@ -92,9 +101,8 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // получение имени пользователя по емейлу-> по айди
                     // запрос к апи??
                     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-                    val userEmail = sharedPreferences.getString("email", "")
-                    val username = Users.find { it.Email == userEmail }?.Name
-                    val usr_id = Users.find { it.Email == userEmail }?.User_ID
+                    val username = sharedPreferences.getString("user_name", "")
+                    val userId = sharedPreferences.getLong("user_id", 0)
 
                     // имя
                     Text(text=username.toString(), style = TextStyle(
@@ -113,9 +121,29 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                             .height(100.dp)
                     )
 
+
+                    var wallet: Wallet = Wallet(0,0,0.0,"0")
+                    runBlocking {
+                        try {
+                            val client = HttpClientSingleton.client
+                            val response: HttpResponse =
+                                client.get("http://10.0.2.2:1111/financialService/getWallet/$userId")
+                            when (response.status) {
+                                HttpStatusCode.OK -> {
+                                    wallet = response.body<Wallet>()
+                                }
+                                else -> {
+                                    throw Throwable(response.body<Message>().message)
+                                }
+                            }
+                        }catch (e: Throwable){
+                            println(e.toString())
+                        }
+                    }
+
                     // баланс
                     // запрос к апи
-                    var balance by remember { mutableStateOf(Wallets.find { it.User_id == usr_id }?.Money ?: 0.0) }
+                    var balance = wallet.balance
                     Row(modifier = Modifier.padding(20.dp)) {
                         Text(text = "Ваш баланс: ", style = TextStyle(
                             fontFamily = FontFamily.Default,
@@ -132,29 +160,27 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // запрос к апи
                     // обновление раз в 30 мин
 
-                    var money_posses by remember { mutableStateOf(0.0) }
+//                    var money_posses by remember { mutableStateOf(0.0) }
+//
+//                    LaunchedEffect(true) {
+//                        while (true) {
+//                            money_posses = CountAssetMoney(userId)
+//                            delay(30 * 60 * 1000) // Пауза на 30 минут
+//                        }
+//                    }
+//
+//                    Row (modifier = Modifier.padding(20.dp)){
+//                        Text(text = "Ваши активы: ", style = TextStyle(
+//                            fontFamily = FontFamily.Default,
+//                            fontWeight = FontWeight.Bold,
+//                            fontSize = 14.sp
+//                        ))
+//                        Text(text = money_posses.toString() + " руб", style = TextStyle(
+//                            fontFamily = FontFamily.Default,
+//                            fontSize = 14.sp
+//                        ))
+//                    }
 
-                    LaunchedEffect(true) {
-                        while (true) {
-                            money_posses = CountAssetMoney(usr_id)
-                            delay(30 * 60 * 1000) // Пауза на 30 минут
-                        }
-                    }
-
-                    Row (modifier = Modifier.padding(20.dp)){
-                        Text(text = "Ваши активы: ", style = TextStyle(
-                            fontFamily = FontFamily.Default,
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
-                        ))
-                        Text(text = money_posses.toString() + " руб", style = TextStyle(
-                            fontFamily = FontFamily.Default,
-                            fontSize = 14.sp
-                        ))
-                    }
-
-
-                    //
 
                     val textFieldColors = TextFieldDefaults.outlinedTextFieldColors(
                         focusedBorderColor = darkgreen, // Цвет при фокусе
@@ -189,11 +215,23 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                                         onClick = {
                                             val amount = inputText.toDoubleOrNull() ?: 0.0
                                             balance += amount
-                                            // обновление данных в кошельке
-                                            // запрос к апи
-                                            val walletToUpdate = Wallets.find { it.User_id == usr_id }
-                                            walletToUpdate?.let {
-                                                it.Money = balance
+
+                                            runBlocking {
+                                                try {
+                                                    val client = HttpClientSingleton.client
+                                                    val response: HttpResponse =
+                                                        client.put("http://10.0.2.2:1111/financialService/topUp/$userId/$amount")
+                                                    when (response.status) {
+                                                        HttpStatusCode.OK -> {
+                                                            println("ok")
+                                                        }
+                                                        else -> {
+                                                            throw Throwable(response.body<Message>().message)
+                                                        }
+                                                    }
+                                                }catch(e: Throwable){
+                                                    println(e.toString())
+                                                }
                                             }
                                             showDialog = false
                                         }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
@@ -235,16 +273,12 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
 }
 
 
-// функция подсчета активов кошелька
-// запрос к апи
-fun CountAssetMoney(user_id: Int?): Double{
-    val filtered = BoughtProducts.filter { it.User_ID == user_id }
-    var money_posess = 0.0
-    for (el in filtered){
-        val act_price = ActualPrices.find { it.Collectible_ID == el.Collectible_ID }?.Price ?: 0.0
-        money_posess += act_price * el.Count
-    }
-    return money_posess
-}
+//// функция подсчета активов кошелька
+//// запрос к апи
+//
+//
+//fun CountAssetMoney(user_id: Long?): Double{
+//    return 13.37
+//}
 
 

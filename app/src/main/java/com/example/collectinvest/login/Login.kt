@@ -199,7 +199,7 @@ fun Login_screen(activity: AppCompatActivity){
                             Button(
                                 onClick = {
 
-                                    val newAuthenticatedUser: AuthenticatedUser;
+                                    val newAuthenticatedUser: AuthenticatedUser
 
                                     runBlocking {
                                         try {
