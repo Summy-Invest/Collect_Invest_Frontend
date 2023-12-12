@@ -7,4 +7,3 @@ data class AuthenticatedUser(
     val id: Long,
     val name: String
 )
-

@@ -6,26 +6,32 @@ import android.os.Parcelable
 
 
 data class CollectibleModel(
-    val Collectible_ID: Int,
-    val Name: String,
-    val Description: String,
-    val Photo: String,
-    val Category_ID: Int
+    val id: Long,
+    val name: String,
+    val description: String,
+    val category: String,
+    val photoUrl: String,
+    val currentPrice: Double,
+    var availableShares: Int
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
+        parcel.readLong(),
         parcel.readString() ?: "",
         parcel.readString() ?: "",
         parcel.readString() ?: "",
-        parcel.readInt(),
+        parcel.readString() ?: "",
+        parcel.readDouble(),
+        parcel.readInt()
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(Collectible_ID)
-        parcel.writeString(Name)
-        parcel.writeString(Description)
-        parcel.writeString(Photo)
-        parcel.writeInt(Category_ID)
+        parcel.writeLong(id)
+        parcel.writeString(name)
+        parcel.writeString(description)
+        parcel.writeString(category)
+        parcel.writeString(photoUrl)
+        parcel.writeDouble(currentPrice)
+        parcel.writeInt(availableShares)
     }
 
     override fun describeContents(): Int {

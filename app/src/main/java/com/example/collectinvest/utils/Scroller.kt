@@ -15,12 +15,13 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.example.collectinvest.entities.collectible.CollectibleItem
 import com.example.collectinvest.models.CollectibleModel
 
 
 // шаблон скроллеров
 @Composable
-fun ScrollerCreator(prods: List<CollectibleModel>, context: Context){
+fun ScrollerCreator(prods: List<CollectibleItem>, context: Context){
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
         contentPadding = PaddingValues(16.dp)

@@ -25,7 +25,7 @@ import androidx.navigation.NavHostController
 import com.example.collectinvest.utils.CardCreator
 import com.example.collectinvest.utils.GoodsProds
 import com.example.collectinvest.utils.ScrollerCreator
-import com.example.collectinvest.utils.TopProds
+
 
 
 
@@ -43,6 +43,7 @@ fun Goods_screen(navController: NavHostController){
                     .padding(top = 60.dp, bottom = 40.dp)
             ) {
                 // контент экрана
+                // СЮДА НАДО ЗАПРОС НА ПОЛУЧЕНИЕ ВСЕХ ТОВАРОВ
                 ScrollerCreator(prods = GoodsProds, context = context)
             }
         },

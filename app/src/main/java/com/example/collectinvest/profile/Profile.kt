@@ -27,7 +27,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -51,18 +50,15 @@ import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
-import com.example.collectinvest.utils.ActualPrices
 import com.example.collectinvest.utils.BoughtProducts
+
 import com.example.collectinvest.utils.HttpClientSingleton
-import com.example.collectinvest.utils.Users
-import com.example.collectinvest.utils.Wallets
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 
@@ -122,7 +118,7 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     )
 
 
-                    var wallet: Wallet = Wallet(0,0,0.0,"0")
+                    var wallet: Wallet = Wallet(0,0,0.0,"")
                     runBlocking {
                         try {
                             val client = HttpClientSingleton.client
@@ -273,12 +269,18 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
 }
 
 
-//// функция подсчета активов кошелька
-//// запрос к апи
-//
-//
-//fun CountAssetMoney(user_id: Long?): Double{
-//    return 13.37
-//}
+// функция подсчета активов кошелька
+// СЮДА ПОЙДЕТ СПИСОК КУПЛЕННОГО
+
+// запрос к апи
+fun CountAssetMoney(user_id: Int?): Double{
+    var filtered = BoughtProducts.filter { it.User_ID == user_id }
+    var money_posess = 0.0
+    for (el in filtered){
+        var act_price = 0
+        money_posess += act_price * el.Count
+    }
+    return money_posess
+}
 
 

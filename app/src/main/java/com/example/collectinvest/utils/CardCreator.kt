@@ -27,22 +27,25 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.collectinvest.ItemActivity
 import com.example.collectinvest.R
+import com.example.collectinvest.entities.collectible.CollectibleItem
 import com.example.collectinvest.models.CollectibleModel
 
 
 // создание карточки товаара
 @Composable
-fun CardCreator(item: CollectibleModel, context: Context, card_size: Int = 200){
-    val name = item.Name
-    val imgUrl = item.Photo
-    val actualPrice = ActualPrices.find { it.Collectible_ID == item.Collectible_ID }?.Price
+fun CardCreator(item: CollectibleItem, context: Context, card_size: Int = 200){
+    val name = item.name
+    val imgUrl = item.photoUrl
+    val actualPrice = item.currentPrice
     ElevatedCard (
         elevation = CardDefaults.cardElevation(
             defaultElevation = 6.dp
         ),
         modifier = Modifier.clickable {
             val intt = Intent(context, ItemActivity::class.java)
-            intt.putExtra("item_data", item)
+            // ПЕРЕДАЧА PARCELABLE
+            val to_pass_item = ToPass(item)
+            intt.putExtra("item_data", to_pass_item)
             context.startActivity(intt)
         }
     ) {
@@ -81,4 +84,11 @@ fun CardCreator(item: CollectibleModel, context: Context, card_size: Int = 200){
             }
         }
     }
+}
+
+// ВОТ ЭТО НЕ ТРОГАЙТЕ ЭТО ДЛЯ ПЕРЕДАЧИ ВАШИХ serializable НА ДРУГОЙ ЭКРАН
+fun ToPass(item: CollectibleItem): CollectibleModel{
+    val to_pass_item = CollectibleModel(id = item.id, name = item.name, description = item.description, category = item.category, photoUrl = item.photoUrl,
+        currentPrice = item.currentPrice, availableShares = item.availableShares)
+    return to_pass_item
 }

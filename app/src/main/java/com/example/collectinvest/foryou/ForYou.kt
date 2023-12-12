@@ -20,6 +20,7 @@ import com.example.collectinvest.utils.CardCreator
 import com.example.collectinvest.utils.GoodsProds
 
 
+
 // экран "Для Вас"
 @Composable
 fun ForYou_screen(navController: NavHostController){
