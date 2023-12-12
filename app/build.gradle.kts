@@ -41,6 +41,10 @@ android {
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.3"
     }
+
+    packaging {
+        resources.excludes.add("META-INF/INDEX.LIST")
+    }
 }
 
 dependencies {
@@ -131,4 +135,10 @@ dependencies {
     implementation ("androidx.lifecycle:lifecycle-common-java8:2.2.0")
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-ktx:2.2.0")
+
+    implementation("io.ktor:ktor-client-content-negotiation:$ktor_version")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:$ktor_version")
+    implementation("ch.qos.logback:logback-classic:1.3.11")
+    implementation("io.ktor:ktor-client-core:$ktor_version")
+    implementation("io.ktor:ktor-client-cio:$ktor_version")
 }

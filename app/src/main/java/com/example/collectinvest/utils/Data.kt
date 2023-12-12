@@ -15,6 +15,8 @@ var TopProds = listOf(
     CollectibleModel(Collectible_ID = 3, Name="Lisa3", Description ="Rofl", Photo = "https://s00.yaplakal.com/pics/pics_preview/1/2/0/6492021.jpg", Category_ID = 1)
 )
 
+
+//TODO вот эту еботу надо брать из бэка
 var GoodsProds = listOf(
     CollectibleModel(Collectible_ID = 1, Name = "Lisa1", Description = "Hype", Photo = "https://www.funnyart.club/uploads/posts/2023-02/thumbs/1675611210_www-funnyart-club-p-lisa-mem-yumor-20.jpg", Category_ID = 1),
     CollectibleModel(Collectible_ID = 2, Name="Lisa2", Description = "Cringe", Photo = "https://static.gtri.be/images/4cb4d2/ee3f884dae_m.jpg", Category_ID = 1),
@@ -28,7 +30,7 @@ var GoodsProds = listOf(
     CollectibleModel(Collectible_ID = 10, Name = "Koshka7", Photo = "https://warframe.market/static/assets/user/avatar/620b280953e99b06525b12c2.png?26f178fb8efff386ade2a4b811d0d9a6", Description = "Koshka s tapkom", Category_ID = 2),
     CollectibleModel(Collectible_ID = 11, Name="Koshka8", Photo = "https://sun6-21.userapi.com/s/v1/if1/fhkhjGBqDRQpAXc5Rhcd_7nseHBkCkkmx3hhuViQROJU8x8NABd095XiI3AHy-YVnXgwr8Az.jpg?size=962x962&quality=96&crop=227,0,962,962&ava=1", Description = "Koshka s ulybkoy", Category_ID = 2),
     CollectibleModel(Collectible_ID = 12, Name="Koshka9", Photo = "https://i.vimeocdn.com/portrait/61741661_640x640", Description = "Koshka stremnaya", Category_ID = 2)
-    )
+)
 
 
 var Users = mutableListOf(

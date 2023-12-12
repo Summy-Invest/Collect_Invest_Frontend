@@ -3,7 +3,6 @@ package com.example.collectinvest.login
 import android.content.Context
 import androidx.activity.compose.setContent
 import androidx.appcompat.app.AppCompatActivity
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -16,7 +15,6 @@ import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.OutlinedTextField
 import androidx.compose.material.TextButton
-import androidx.compose.material.TextField
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.Text
 
@@ -38,19 +36,30 @@ import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.collectinvest.MainScreen
-import com.example.collectinvest.models.UserModel
-import com.example.collectinvest.models.WalletModel
+import com.example.collectinvest.entities.Message
+import com.example.collectinvest.entities.user.AuthenticatedUser
+import com.example.collectinvest.entities.user.User
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.white
 
-import com.example.collectinvest.utils.Users
-import com.example.collectinvest.utils.Wallets
+import io.ktor.client.call.body
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
+import com.example.collectinvest.utils.HttpClientSingleton
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import kotlinx.coroutines.runBlocking
 
 
 // преференсес для сессии
 private const val PREFS_NAME = "user_prefs"
 private const val IS_LOGGED_IN = "is_logged_in"
-private const val EMAIL = "email"
+private const val USER_ID = "user_id"
+private const val USER_NAME = "user_name"
+
 
 
 // экран входа
@@ -89,22 +98,40 @@ fun Login_screen(activity: AppCompatActivity){
 
             // кнопка входа
             Button(onClick = {
-                // проверка на наличие такого юзера с таким паролем
-                // запрос к апи
-                val isValid = check_user(email, password)
-                if (isValid){
-                    // сохранение сессии входа (емейл в преференсес)
-                    saveUserLoginStatus(context = activity, isLoggedIn = true, userEmail = email)
 
-                    // установление контента приложения в главной активности
-                    activity.setContent {
-                        MainScreen(activity = activity)
+                val authenticatedUser: AuthenticatedUser;
+
+                runBlocking {
+                    try {
+                        val client = HttpClientSingleton.client
+                        val response: HttpResponse =
+                            client.get("http://10.0.2.2:1111/userService/logIn/$email/$password")
+                        when (response.status) {
+                            HttpStatusCode.OK -> {
+                                authenticatedUser = response.body<AuthenticatedUser>()
+
+                                saveUserLoginStatus(
+                                    context = activity,
+                                    isLoggedIn = true,
+                                    id = authenticatedUser.id,
+                                    userName = authenticatedUser.name
+                                )
+
+                                activity.setContent {
+                                    MainScreen(activity = activity)
+                                }
+
+                            }
+
+                            else -> {
+                                errorMessage = response.body<Message>().message
+                            }
+                        }
+                    }catch(e: Throwable){
+                        errorMessage = e.toString()
                     }
                 }
-                else{
-                    // ошибка
-                    errorMessage = "Неверный email или пароль"
-                } 
+
 
 
             }, modifier = Modifier.fillMaxWidth(), colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)) {
@@ -172,37 +199,46 @@ fun Login_screen(activity: AppCompatActivity){
                             Button(
                                 onClick = {
 
-                                    // вызов проверки на корректность емейла
+                                    val newAuthenticatedUser: AuthenticatedUser;
 
-                                    //если все ок
-                                    // запрос к апи
-                                    if (check_email(emailNew)){
-                                        // этой строчки не будет (получение последнего юзер айди из бд)
-                                        var usr_id = Users.get(Users.size - 1).User_ID + 1
+                                    runBlocking {
+                                        try {
+                                            val newUser: User = User(nameNew, emailNew, passwordNew)
+                                            val client = HttpClientSingleton.client
+                                            val response: HttpResponse =
+                                                client.post("http://10.0.2.2:1111/userService/signUp")
+                                                {
+                                                    contentType(ContentType.Application.Json)
+                                                    setBody(newUser)
+                                                }
+                                            when (response.status) {
+                                                HttpStatusCode.OK -> {
 
-                                        // запись в юзеры
-                                        Users.add(UserModel(User_ID = usr_id, Name = nameNew, Email = emailNew, Password = passwordNew))
+                                                    newAuthenticatedUser =
+                                                        response.body<AuthenticatedUser>()
 
-                                        // этой строчки не будет (получение последнего айди кошелька из бд)
-                                        var wallet_id = Wallets.get(Wallets.size - 1).Wallet_id + 1
+                                                    saveUserLoginStatus(
+                                                        context = activity,
+                                                        isLoggedIn = true,
+                                                        id = newAuthenticatedUser.id,
+                                                        userName = newAuthenticatedUser.name
+                                                    )
 
-                                        // запись в кошельки
-                                        Wallets.add(WalletModel(Wallet_id = wallet_id, Money = 0.0, Status = "OK", User_id = usr_id))
+                                                    showDialog = false
 
+                                                    activity.setContent {
+                                                        MainScreen(activity = activity)
+                                                    }
 
-                                        //  сохранение данных входа
-                                        saveUserLoginStatus(context = activity, isLoggedIn = true, userEmail = emailNew)
-                                        // закрытие
-                                        showDialog = false
+                                                }
 
-                                        // сразу вход в систему
-                                        activity.setContent {
-                                            MainScreen(activity = activity)
+                                                else -> {
+                                                    errorMessageNew = response.toString()
+                                                }
+                                            }
+                                        }catch (e: Throwable){
+                                            errorMessage = e.toString()
                                         }
-                                    }
-                                    else{
-                                        // ошибка емейла
-                                        errorMessageNew = "Неправильно написан email или такой email уже есть в базе"
                                     }
 
                                 }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
@@ -228,25 +264,8 @@ fun Login_screen(activity: AppCompatActivity){
                     }
                 )
             }
-
-
-
         }
     }
-}
-
-
-// проверка на правильность емейла и пароля
-// запрос к апи
-private fun check_user(email: String, password: String): Boolean{
-    val foundUser = Users.find { it.Email == email && it.Password == password }
-    return foundUser != null
-}
-
-// проверка на правильно написанный емейл
-private fun check_email(email: String): Boolean{
-    val emailRegex = Regex("^\\w+([.-]?\\w+)*@\\w+([.-]?\\w+)*(\\.\\w{2,3})+\$")
-    return emailRegex.matches(email) && Users.find { it.Email == email } == null
 }
 
 
@@ -279,11 +298,12 @@ fun LoginField(value: String,
 
 
 // помещение данных пользователя в преференсес и сохранение статуса входа
-fun saveUserLoginStatus(context: Context, isLoggedIn: Boolean, userEmail: String) {
+fun saveUserLoginStatus(context: Context, isLoggedIn: Boolean, id: Long, userName: String) {
     val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     val editor = sharedPreferences.edit()
     editor.putBoolean(IS_LOGGED_IN, isLoggedIn)
-    editor.putString(EMAIL, userEmail)
+    editor.putLong(USER_ID, id)
+    editor.putString(USER_NAME, userName)
     editor.apply()
 }
 
@@ -292,7 +312,3 @@ fun isUserLoggedIn(context: Context): Boolean {
     val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
     return sharedPreferences.getBoolean(IS_LOGGED_IN, false)
 }
-
-
-
-

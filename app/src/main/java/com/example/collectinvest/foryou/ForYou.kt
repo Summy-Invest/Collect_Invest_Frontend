@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import com.example.collectinvest.utils.CardCreator
 import com.example.collectinvest.utils.GoodsProds
-import com.example.collectinvest.utils.TopProds
 
 
 // экран "Для Вас"
@@ -37,6 +36,8 @@ fun ForYou_screen(navController: NavHostController){
                 Row (modifier = Modifier.horizontalScroll(rememberScrollState()).padding(horizontal = 100.dp), horizontalArrangement = Arrangement.SpaceBetween){
                     // получение списка отображаемых товаров
                     // первые 3 эл-та из списка полученных из апи
+
+                    //TODO
                     val Displayed = GoodsProds.subList(0, 3)
                     Displayed.forEachIndexed{
                             index, item -> CardCreator(item, context)
