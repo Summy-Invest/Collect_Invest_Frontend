@@ -53,9 +53,7 @@ import com.example.collectinvest.models.TransactionModel
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
-import com.example.collectinvest.utils.ActualPrices
 import com.example.collectinvest.utils.BoughtProducts
-import com.example.collectinvest.utils.Categories
 import com.example.collectinvest.utils.Transactions
 import com.example.collectinvest.utils.Users
 import com.example.collectinvest.utils.Wallets
@@ -109,7 +107,7 @@ fun item_container(item: CollectibleModel?, context: Context){
             .padding()
             .verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally){
         // название
-        Text(text = item?.Name.toString(), style = TextStyle(
+        Text(text = item!!.name.toString(), style = TextStyle(
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp
@@ -118,7 +116,7 @@ fun item_container(item: CollectibleModel?, context: Context){
         // картинка
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(item?.Photo.toString())
+                .data(item!!.photoUrl.toString())
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_launcher_background),
@@ -129,20 +127,18 @@ fun item_container(item: CollectibleModel?, context: Context){
                 .padding(20.dp)
         )
         // описание
-        Text(text = "Описание: " + item?.Description.toString(), style = TextStyle(
+        Text(text = "Описание: " + item!!.description.toString(), style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
 
         // актуальная цена
-        // будет запрос к апи для получения акт. цены по айди
-        val actualPrice = ActualPrices.find { it.Collectible_ID == item?.Collectible_ID }?.Price ?: 0.0
+        val actualPrice = item!!.currentPrice
         Text(text = "Актуальная цена: " + actualPrice.toString() + " руб", style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
 
         // название категории
-        // аналогично цене
-        val category = Categories.find { it.Category_ID == item?.Category_ID }?.Category_name
+        val category = item!!.category
         Text(text = "Категория: "+category.toString(), style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
@@ -152,7 +148,7 @@ fun item_container(item: CollectibleModel?, context: Context){
         val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
         val userEmail = sharedPreferences.getString("email", "")
         val usr_id = Users.find { it.Email == userEmail }?.User_ID ?: 0
-        val count = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.Collectible_ID }?.Count ?: 0
+        val count = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item!!.id }?.Count ?: 0
         Text(text = "Куплено: ${count}", style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
@@ -273,7 +269,7 @@ fun item_container(item: CollectibleModel?, context: Context){
                                     // проверка на наличие акций этого предмета у юзера
                                     // если акций нет - кнопка продать отключается
                                     // запрос к апи?
-                                    if (BoughtProducts.find { it.Collectible_ID == item?.Collectible_ID && it.User_ID ==usr_id } ==null)
+                                    if (BoughtProducts.find { it.Collectible_ID == item?.id && it.User_ID ==usr_id } ==null)
                                         isEnabled = false
                                     showDialogSell = false
                                 }
@@ -330,14 +326,14 @@ fun BuyFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: In
     // проверка на наличие акций этого товара у юзера
     // если нет, то в таблицу купленных добавляется новая запись
     // запрос к апи
-    if (BoughtProducts.find { it.Collectible_ID == item?.Collectible_ID && it.User_ID == usr_id } == null){
+    if (BoughtProducts.find { it.Collectible_ID == item?.id && it.User_ID == usr_id } == null){
         var order_id = BoughtProducts.get(BoughtProducts.size - 1).Order_Id + 1
-        BoughtProducts.add(BoughtAssetModel(Order_Id = order_id, Order_date = "01.03.23", Count = count, Collectible_ID = item?.Collectible_ID ?: 0, User_ID = usr_id, Transaction_id = tr_id))
+        BoughtProducts.add(BoughtAssetModel(Order_Id = order_id, Order_date = "01.03.23", Count = count, Collectible_ID = item?.id ?: 0, User_ID = usr_id, Transaction_id = tr_id))
     }
     // если есть, то в таблице купленных обновляется количество
     //запрос к апи
     else{
-        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.Collectible_ID }
+        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.id }
         boughtToUpdate?.let{
             it.Count += count
         }
@@ -373,7 +369,7 @@ fun SellFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: I
     // если больше 0 - в таблице купленного меняется кол-во
     // запрос к апи
     if (ActualCount - count > 0){
-        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.Collectible_ID }
+        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.id }
         boughtToUpdate?.let{
             it.Count -= count
         }
@@ -381,7 +377,7 @@ fun SellFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: I
     // если 0 - из таблицы купленных удаляется запись о владении юзера предметом
     // запрос к апи
     else{
-        BoughtProducts.removeIf { it.Collectible_ID == item?.Collectible_ID  && it.User_ID == usr_id}
+        BoughtProducts.removeIf { it.Collectible_ID == item?.id  && it.User_ID == usr_id}
     }
 
     // обновление кошелька

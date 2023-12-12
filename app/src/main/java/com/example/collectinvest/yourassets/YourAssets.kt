@@ -24,6 +24,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
+import com.example.collectinvest.entities.collectible.CollectibleItem
 import com.example.collectinvest.models.CollectibleModel
 import com.example.collectinvest.utils.BoughtProducts
 import com.example.collectinvest.utils.GoodsProds
@@ -42,7 +43,7 @@ fun YourAssets_screen(navController: NavHostController) {
     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
     val userEmail = sharedPreferences.getString("email", "")
     val usr_id = Users.find { it.Email == userEmail }?.User_ID
-
+    // СЮДА НАДО СПИСОК КУПЛЕННОГО ПО ЮЗЕР АЙДИ
     var assetsList by remember {
         mutableStateOf(GetAssets(usr_id))
     }
@@ -78,10 +79,9 @@ fun YourAssets_screen(navController: NavHostController) {
 
 
 // запрос к апи
-fun GetAssets(usr_id: Int?): List<CollectibleModel>{
-
+fun GetAssets(usr_id: Int?): List<CollectibleItem>{
     var UserAssetsIds =  BoughtProducts.filter{ it.User_ID == usr_id  && it.Count > 0}.map { it.Collectible_ID }
-    var UserAssets = GoodsProds.filter { it.Collectible_ID in UserAssetsIds }
+    var UserAssets = GoodsProds.filter { it.id in UserAssetsIds }
     return UserAssets
 }
 

@@ -8,7 +8,7 @@ data class BoughtAssetModel (
     val Order_Id: Int,
     val Order_date: String,
     var Count: Int,
-    val Collectible_ID: Int,
+    val Collectible_ID: Long,
     val User_ID: Int,
     val Transaction_id: Int
 ): Parcelable {
@@ -16,7 +16,7 @@ data class BoughtAssetModel (
         parcel.readInt(),
         parcel.readString() ?: "",
         parcel.readInt(),
-        parcel.readInt(),
+        parcel.readLong(),
         parcel.readInt(),
         parcel.readInt()
     )
@@ -25,7 +25,7 @@ data class BoughtAssetModel (
         parcel.writeInt(Order_Id)
         parcel.writeString(Order_date)
         parcel.writeInt(Count)
-        parcel.writeInt(Collectible_ID)
+        parcel.writeLong(Collectible_ID)
         parcel.writeInt(User_ID)
         parcel.writeInt(Transaction_id)
 

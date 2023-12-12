@@ -67,23 +67,13 @@ import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
-import com.example.collectinvest.utils.ActualPrices
 import com.example.collectinvest.utils.BoughtProducts
-import com.example.collectinvest.utils.SessionManager
-import com.example.collectinvest.utils.SessionManager.Companion.USER_EMAIL_KEY
+
 import com.example.collectinvest.utils.Users
 import com.example.collectinvest.utils.Wallets
 
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.android.Android
-import io.ktor.http.ContentType
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
+
 
 
 // экран пользователя
@@ -122,6 +112,7 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     // запрос к апи??
                     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
                     val userEmail = sharedPreferences.getString("email", "")
+                    //val username = sharedPreferences.getString("user_name", "")
                     val username = Users.find { it.Email == userEmail }?.Name
                     val usr_id = Users.find { it.Email == userEmail }?.User_ID
 
@@ -265,12 +256,14 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
 
 
 // функция подсчета активов кошелька
+// СЮДА ПОЙДЕТ СПИСОК КУПЛЕННОГО
+
 // запрос к апи
 fun CountAssetMoney(user_id: Int?): Double{
     var filtered = BoughtProducts.filter { it.User_ID == user_id }
     var money_posess = 0.0
     for (el in filtered){
-        var act_price = ActualPrices.find { it.Collectible_ID == el.Collectible_ID }?.Price ?: 0.0
+        var act_price = 0
         money_posess += act_price * el.Count
     }
     return money_posess
