@@ -43,27 +43,31 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.collectinvest.R
-import com.example.collectinvest.models.BoughtAssetModel
+import com.example.collectinvest.entities.collectible.BuySellRequest
 import com.example.collectinvest.models.CollectibleModel
-import com.example.collectinvest.models.TransactionModel
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
-import com.example.collectinvest.utils.BoughtProducts
-import com.example.collectinvest.utils.Transactions
-import com.example.collectinvest.utils.Users
-import com.example.collectinvest.utils.Wallets
+import com.example.collectinvest.utils.HttpClientSingleton
+import invest.collect.com.entities.collectible.UserShares
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.contentType
+import kotlinx.coroutines.runBlocking
 
 
 // экран товара
 // принимает элемент класса Collectible
 @Composable
 fun Item_screen(item: CollectibleModel?, activity: AppCompatActivity){
-    val navController = rememberNavController()
     Scaffold(
         // верхняя панель
         topBar = {
@@ -107,7 +111,7 @@ fun item_container(item: CollectibleModel?, context: Context){
             .padding()
             .verticalScroll(rememberScrollState()), horizontalAlignment = Alignment.CenterHorizontally){
         // название
-        Text(text = item!!.name.toString(), style = TextStyle(
+        Text(text = item!!.name, style = TextStyle(
             fontFamily = FontFamily.Default,
             fontWeight = FontWeight.Bold,
             fontSize = 14.sp
@@ -116,7 +120,7 @@ fun item_container(item: CollectibleModel?, context: Context){
         // картинка
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
-                .data(item!!.photoUrl.toString())
+                .data(item.photoUrl.toString())
                 .crossfade(true)
                 .build(),
             placeholder = painterResource(R.drawable.ic_launcher_background),
@@ -127,18 +131,18 @@ fun item_container(item: CollectibleModel?, context: Context){
                 .padding(20.dp)
         )
         // описание
-        Text(text = "Описание: " + item!!.description.toString(), style = TextStyle(
+        Text(text = "Описание: " + item.description.toString(), style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
 
         // актуальная цена
-        val actualPrice = item!!.currentPrice
+        val actualPrice = item.currentPrice
         Text(text = "Актуальная цена: " + actualPrice.toString() + " руб", style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
 
         // название категории
-        val category = item!!.category
+        val category = item.category
         Text(text = "Категория: "+category.toString(), style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
@@ -146,9 +150,36 @@ fun item_container(item: CollectibleModel?, context: Context){
         // количество купленных акций
         // будет запрос к апи (таблица купленных акционок по юзер айди)
         val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
-        val userEmail = sharedPreferences.getString("email", "")
-        val usr_id = Users.find { it.Email == userEmail }?.User_ID ?: 0
-        val count = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item!!.id }?.Count ?: 0
+        val userId = sharedPreferences.getLong("user_id", 0)
+
+        var count by remember {
+            mutableStateOf(0)
+        }
+
+        runBlocking {
+            try {
+                val client = HttpClientSingleton.client
+                val response: HttpResponse =
+                    client.get("http://10.0.2.2:1111/collectibleService/getUserCollectibles/$userId/${item.id}")
+                when (response.status) {
+                    HttpStatusCode.OK -> {
+                        count = response.body<UserShares>().shares
+                    }
+
+                    else -> {
+                        println(response.body<String>())
+                    }
+                }
+            } catch (e: Throwable) {
+                println(e.toString())
+            }
+        }
+
+
+
+
+
+
         Text(text = "Куплено: ${count}", style = TextStyle(
             fontFamily = FontFamily.Default,
             fontSize = 14.sp), modifier = Modifier.padding(20.dp))
@@ -203,19 +234,35 @@ fun item_container(item: CollectibleModel?, context: Context){
 
                         Button(
                             onClick = {
-//                                     //TODO покупка
-//                                // количество и проверка на кошелек
-//                                val amount = inputTextBuy.toIntOrNull() ?: 0
-//                                val canBuy = CanBuy(usr_id, actualPrice, amount)
-//                                if (canBuy){
-//                                    // вызов функции покупки
-//                                    BuyFunc(item, usr_id, actualPrice, amount)
-//                                    isEnabled = true
-//                                    showDialogBuy = false
-//                                }
-//                                else{
-//                                    errorMessageBuy = "Недостаточно средств"
-//                                }
+
+
+                                val amount = inputTextBuy.toIntOrNull() ?: 0
+
+                                runBlocking {
+                                    try {
+                                        val buyRequest = BuySellRequest(item.id, userId, amount)
+                                        val client = HttpClientSingleton.client
+                                        val response: HttpResponse =
+                                            client.post("http://10.0.2.2:1111/collectibleService/buy")
+                                            {
+                                                contentType(ContentType.Application.Json)
+                                                setBody(buyRequest)
+                                            }
+                                        when (response.status) {
+                                            HttpStatusCode.OK -> {
+                                                isEnabled = true
+                                                showDialogBuy = false
+                                            }
+
+                                            else -> {
+                                                errorMessageBuy = response.body<String>()
+                                            }
+                                        }
+                                    } catch (e: Throwable) {
+                                        errorMessageBuy = e.toString()
+                                    }
+                                }
+
                             }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
                         ) {
                             Text("Купить", color = white)
@@ -260,24 +307,33 @@ fun item_container(item: CollectibleModel?, context: Context){
 
                         Button(
                             onClick = {
-                                      //TODO продажа
-//                                // количество и проверка на возможность продать
-//                                val amount_to_sell = inputTextSell.toIntOrNull() ?: 0
-//                                val canSell = CanSell(count, amount_to_sell)
-//                                if (canSell){
-//                                    // функция продажи
-//                                    SellFunc(item, usr_id, actualPrice, amount_to_sell, count)
-//
-//                                    // проверка на наличие акций этого предмета у юзера
-//                                    // если акций нет - кнопка продать отключается
-//                                    // запрос к апи?
-//                                    if (BoughtProducts.find { it.Collectible_ID == item?.Collectible_ID && it.User_ID ==usr_id } ==null)
-//                                        isEnabled = false
-//                                    showDialogSell = false
-//                                }
-//                                else{
-//                                    errorMessageSell = "Недостаточно акций"
-//                                }
+
+                                val amount = inputTextSell.toIntOrNull() ?: 0
+
+                                var sellRequest: BuySellRequest = BuySellRequest(item.id, userId, amount)
+
+                                runBlocking {
+                                    try {
+                                        val client = HttpClientSingleton.client
+                                        val response: HttpResponse = client.post("http://10.0.2.2:1111/collectibleService/sell")
+                                        {
+                                            contentType(ContentType.Application.Json)
+                                            setBody(sellRequest)
+                                        }
+                                        when (response.status) {
+                                            HttpStatusCode.OK -> {
+                                                isEnabled = true
+                                                showDialogSell = false
+                                            }
+
+                                            else -> {
+                                                errorMessageSell = response.body<String>()
+                                            }
+                                        }
+                                    } catch (e: Throwable) {
+                                        errorMessageSell = e.toString()
+                                    }
+                                }
                             }, colors = ButtonDefaults.buttonColors(backgroundColor = darkgreen)
                         ) {
                             Text("Продать", color = white)
@@ -299,93 +355,5 @@ fun item_container(item: CollectibleModel?, context: Context){
                 }
             )
         }
-
-
-
-    }
-}
-
-
-//// проверка на возможность купить
-//// баланс юзера по айди
-//// запрос к кошелькам?
-//fun CanBuy(usr_id: Int?, actualPrice: Double, count: Int): Boolean{
-//    var money_to_spend = actualPrice * count
-//    var balance = Wallets.find { it.User_id == usr_id }?.Money ?: 0.0
-//    return (balance - money_to_spend) >= 0
-//}
-
-
-// функция покупки
-fun BuyFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: Int){
-    // транзакция
-    // этой строчки не будет (получение индекса последней транзакции)
-    var tr_id = Transactions.get(Transactions.size - 1).Transaction_id + 1
-    // добавление новой транзакции
-    // запрос к апи на добавление записи в транзакции
-    Transactions.add(TransactionModel(Transaction_id = tr_id, Amount = count, Status = "Buy", Wallet_id = Wallets.find { it.User_id == usr_id }?.Wallet_id?:0))
-
-    // проверка на наличие акций этого товара у юзера
-    // если нет, то в таблицу купленных добавляется новая запись
-    // запрос к апи
-    if (BoughtProducts.find { it.Collectible_ID == item?.id && it.User_ID == usr_id } == null){
-        var order_id = BoughtProducts.get(BoughtProducts.size - 1).Order_Id + 1
-        BoughtProducts.add(BoughtAssetModel(Order_Id = order_id, Order_date = "01.03.23", Count = count, Collectible_ID = item?.id ?: 0, User_ID = usr_id, Transaction_id = tr_id))
-    }
-    // если есть, то в таблице купленных обновляется количество
-    //запрос к апи
-    else{
-        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.id }
-        boughtToUpdate?.let{
-            it.Count += count
-        }
-    }
-
-    // обновление кошелька
-    // запрос к апи
-    val walletToUpdate = Wallets.find { it.User_id == usr_id }
-    walletToUpdate?.let {
-        it.Money -= actualPrice*count
-    }
-
-}
-
-
-//// проверка на возможность продать
-//fun CanSell(usersCount: Int, intentCount:Int): Boolean{
-//    return usersCount >= intentCount
-//}
-
-// функция продажи
-fun SellFunc(item: CollectibleModel?, usr_id: Int, actualPrice: Double, count: Int, ActualCount: Int){
-
-    // транзакция
-    // этой строчки не будет (получение индекса последней транзакции)
-    var tr_id = Transactions.get(Transactions.size - 1).Transaction_id + 1
-
-    // добавление транзакции
-    // запрос к апи
-    Transactions.add(TransactionModel(Transaction_id = tr_id, Amount = count, Status = "Sell", Wallet_id = Wallets.find { it.User_id == usr_id }?.Wallet_id?:0))
-
-    // количество акций предмета после продажи
-    // если больше 0 - в таблице купленного меняется кол-во
-    // запрос к апи
-    if (ActualCount - count > 0){
-        val boughtToUpdate = BoughtProducts.find { it.User_ID == usr_id && it.Collectible_ID == item?.id }
-        boughtToUpdate?.let{
-            it.Count -= count
-        }
-    }
-    // если 0 - из таблицы купленных удаляется запись о владении юзера предметом
-    // запрос к апи
-    else{
-        BoughtProducts.removeIf { it.Collectible_ID == item?.id  && it.User_ID == usr_id}
-    }
-
-    // обновление кошелька
-    // запрос к апи
-    val walletToUpdate = Wallets.find { it.User_id == usr_id }
-    walletToUpdate?.let {
-        it.Money += actualPrice*count
     }
 }

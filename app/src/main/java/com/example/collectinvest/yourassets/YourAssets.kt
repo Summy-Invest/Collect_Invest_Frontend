@@ -21,13 +21,13 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.navigation.NavHostController
 import com.example.collectinvest.entities.collectible.CollectibleItem
-import com.example.collectinvest.models.CollectibleModel
-import com.example.collectinvest.utils.BoughtProducts
-import com.example.collectinvest.utils.GoodsProds
+import com.example.collectinvest.utils.HttpClientSingleton
 import com.example.collectinvest.utils.ScrollerCreator
-
-import com.example.collectinvest.utils.Users
-
+import io.ktor.client.call.body
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
+import io.ktor.http.HttpStatusCode
+import kotlinx.coroutines.runBlocking
 
 
 // экран купленного
@@ -38,13 +38,14 @@ fun YourAssets_screen(navController: NavHostController) {
     // запрос к апи
     val sharedPreferences = context.getSharedPreferences("user_prefs", Context.MODE_PRIVATE)
     val userEmail = sharedPreferences.getString("email", "")
-    val usr_id = Users.find { it.Email == userEmail }?.User_ID
+    val usr_id = sharedPreferences.getLong("user_id", 0)
     // СЮДА НАДО СПИСОК КУПЛЕННОГО ПО ЮЗЕР АЙДИ
     var assetsList by remember {
         mutableStateOf(GetAssets(usr_id))
     }
 
     val lifecycleOwner = LocalLifecycleOwner.current
+    assetsList = GetAssets(usr_id)
     DisposableEffect(Unit) {
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_RESUME) {
@@ -73,11 +74,24 @@ fun YourAssets_screen(navController: NavHostController) {
     )
 }
 
-//TODO все колекционки пользователя
-// запрос к апи
-fun GetAssets(usr_id: Int?): List<CollectibleItem>{
-    var UserAssetsIds =  BoughtProducts.filter{ it.User_ID == usr_id  && it.Count > 0}.map { it.Collectible_ID }
-    var UserAssets = GoodsProds.filter { it.id in UserAssetsIds }
-    return UserAssets
+fun GetAssets(userId: Long): MutableList<CollectibleItem>{
+
+    var res: MutableList<CollectibleItem>
+    runBlocking {
+        val client = HttpClientSingleton.client
+        val response: HttpResponse = client.get("http://10.0.2.2:1111/collectibleService/getAllUserCollectibles/$userId")
+        res = when (response.status) {
+            HttpStatusCode.OK -> {
+                response.body<List<CollectibleItem>>().toMutableList()
+            }
+            else -> {
+                println(response.body<String>())
+                emptyList<CollectibleItem>().toMutableList()
+            }
+        }
+    }
+    System.out.println(res.toString())
+    System.out.println(userId)
+    return res
 }
 

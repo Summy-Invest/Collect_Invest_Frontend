@@ -50,7 +50,6 @@ import com.example.collectinvest.login.saveUserLoginStatus
 import com.example.collectinvest.theme.darkgreen
 import com.example.collectinvest.theme.lightgreen
 import com.example.collectinvest.theme.white
-import com.example.collectinvest.utils.BoughtProducts
 
 import com.example.collectinvest.utils.HttpClientSingleton
 import io.ktor.client.call.body
@@ -266,21 +265,6 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
             }
         }
     )
-}
-
-
-// функция подсчета активов кошелька
-// СЮДА ПОЙДЕТ СПИСОК КУПЛЕННОГО
-
-// запрос к апи
-fun CountAssetMoney(user_id: Int?): Double{
-    var filtered = BoughtProducts.filter { it.User_ID == user_id }
-    var money_posess = 0.0
-    for (el in filtered){
-        var act_price = 0
-        money_posess += act_price * el.Count
-    }
-    return money_posess
 }
 
 

@@ -6,7 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.collectinvest.foryou.ForYou_screen
 import com.example.collectinvest.goods.Goods_screen
-import com.example.collectinvest.search.Search_screen
 import com.example.collectinvest.yourassets.YourAssets_screen
 
 @Composable
@@ -24,10 +23,6 @@ fun NavGraph(
         }
         composable("YourAssets_screen"){
             YourAssets_screen(navController = navHostController)
-        }
-
-        composable("Search_screen"){
-            Search_screen()
         }
 
     }
