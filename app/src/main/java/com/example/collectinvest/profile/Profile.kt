@@ -27,7 +27,6 @@ import androidx.compose.material.TopAppBar
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -54,15 +53,12 @@ import com.example.collectinvest.theme.white
 import com.example.collectinvest.utils.BoughtProducts
 
 import com.example.collectinvest.utils.HttpClientSingleton
-import com.example.collectinvest.utils.Users
-import com.example.collectinvest.utils.Wallets
 import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.put
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpStatusCode
 
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 
 
@@ -122,7 +118,7 @@ fun Profile_screen(activprof: AppCompatActivity, context: Context, mainact: AppC
                     )
 
 
-                    var wallet: Wallet = Wallet(0,0,0.0,"", null)
+                    var wallet: Wallet = Wallet(0,0,0.0,"")
                     runBlocking {
                         try {
                             val client = HttpClientSingleton.client
